@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<!-- saved from url=(0034)https://harshcs2002.github.io/imp/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate UPSC Atlas - Final Version</title>
+  <style>
+    :root { 
+      --color-bg: #f8fafc; --color-panel: #ffffff; --color-text: #0f172a; 
+      --color-subtext: #475569; --color-border: #cbd5e1; --color-primary: #1565c0; 
+      --color-success: #2e7d32; --color-warning: #d97706; --color-danger: #c62828; 
+    }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: var(--color-bg); color: var(--color-text); }
+    * { box-sizing: border-box; }
+    
+    #imap-wrap { display: flex; gap: 15px; width: 100%; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; height: 85vh; }
+    #layer-panel { width: 300px; flex-shrink: 0; background: var(--color-panel); border: 1px solid var(--color-border); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Top Tabs */
+    .panel-tabs { display: flex; border-bottom: 1px solid var(--color-border); background: #f1f5f9; flex-shrink: 0; }
+    .tab-btn { flex: 1; padding: 12px 0; border: none; background: transparent; font-weight: 700; color: var(--color-subtext); cursor: pointer; transition: 0.2s; font-size: 13px; border-bottom: 3px solid transparent; }
+    .tab-btn.active { color: var(--color-primary); border-bottom: 3px solid var(--color-primary); background: white; }
+    .tab-btn:hover:not(.active) { background: #e2e8f0; }
+
+    /* Tab Contents */
+    .tab-content { padding: 15px; display: none; flex-direction: column; flex: 1; overflow-y: auto; }
+    .tab-content.active { display: flex; }
+
+    #layer-panel h3 { font-size: 16px; font-weight: 600; margin: 0 0 15px; color: var(--color-primary); display: flex; align-items: center; gap: 8px; }
+    
+    #map-area { flex: 1; min-width: 300px; position: relative; background: #e0f2fe; border-radius: 12px; border: 1px solid var(--color-border); box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden; }
+    #india-svg { width: 100%; height: 100%; display: block; cursor: crosshair; }
+    
+    #tip { position: absolute; background: var(--color-panel); border: 1px solid var(--color-border); border-radius: 8px; padding: 12px 15px; font-size: 12px; display: none; min-width: 200px; max-width: 280px; z-index: 200; box-shadow: 0 10px 25px rgba(0,0,0,0.15); pointer-events: auto; }
+    #tip-close { position: absolute; top: 8px; right: 8px; background: none; border: none; cursor: pointer; font-size: 14px; color: #94a3b8; }
+    
+    #draw-toolbar { display:none; position:absolute; top:10px; left:50%; transform:translateX(-50%); background:rgba(30,41,59,0.95); color:white; border-radius:10px; padding:10px 16px; align-items:center; gap:10px; font-size:13px; box-shadow:0 4px 15px rgba(0,0,0,0.3); z-index:100; white-space:nowrap; backdrop-filter:blur(4px); }
+    
+    /* Quiz Area Styles */
+    .quiz-menu-btn { width: 100%; padding: 12px; margin-bottom: 10px; background: white; border: 2px solid var(--color-border); color: var(--color-text); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: left; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .quiz-menu-btn:hover { border-color: var(--color-primary); background: #eff6ff; }
+    .quiz-hud { display: flex; justify-content: space-between; font-weight: bold; color: var(--color-subtext); margin-bottom: 15px; font-size: 12px; }
+    .quiz-q-text { font-size: 14px; line-height: 1.5; margin: 0 0 15px 0; font-weight: 700; color: var(--color-text); }
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-opt-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; text-align: left; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 500;}
+    .quiz-opt-btn:hover:not(:disabled) { border-color: var(--color-primary); background: #eff6ff; }
+    .quiz-opt-btn.correct { background: #dcfce7; border-color: var(--color-success); color: var(--color-success); font-weight: 700; }
+    .quiz-opt-btn.wrong { background: #fee2e2; border-color: var(--color-danger); color: var(--color-danger); text-decoration: line-through; }
+    .quiz-text-input { width: 100%; padding: 10px; border: 2px solid var(--color-border); border-radius: 6px; font-size: 13px; margin-bottom: 10px; }
+    .quiz-submit-btn { width: 100%; padding: 10px; background: var(--color-primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .quiz-feedback { margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 6px; font-size: 13px; }
+    .quiz-next-btn { width: 100%; padding: 10px; background: var(--color-text); color: white; border: none; border-radius: 6px; font-weight: bold; display: none; cursor: pointer; margin-top: 15px;}
+    .qcount-btn { padding: 6px 14px; border: 2px solid var(--color-border); border-radius: 20px; background: white; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s; color: var(--color-text); }
+    .qcount-btn:hover { border-color: var(--color-primary); background: #eff6ff; }
+    .qcount-btn.qcount-active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    
+    .arrange-container { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
+    .arrange-item { padding: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; text-align: center; font-weight: 600; font-size:12px; }
+    .arrange-item:hover { background: #e2e8f0; }
+    .arrange-target { min-height: 50px; border: 2px dashed var(--color-border); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; background: #f8fafc; }
+    .arrange-target .arrange-item { background: var(--color-primary); color: white; border-color: #1e3a8a; }
+
+    .identify-pulse { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { stroke-width: 2; opacity: 1; } 50% { stroke-width: 6; opacity: 0.5; } 100% { stroke-width: 2; opacity: 1; } }
+
+    /* Smart Filter UI */
+    .filter-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--color-border); flex-grow: 1; display: flex; flex-direction: column; }
+    .filter-title { font-size: 12px; font-weight: 700; color: var(--color-subtext); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
+    .chip { padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--color-subtext); background: #f1f5f9; border: 1px solid var(--color-border); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; }
+    .chip:hover { border-color: var(--color-primary); }
+    .chip.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .filter-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+    .btn-filter { flex: 1; padding: 8px; font-size: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .btn-apply { background: var(--color-success); color: white; }
+    .btn-apply:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.7; }
+    .btn-clear { background: #f1f5f9; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-clear:disabled { color: #94a3b8; cursor: not-allowed; opacity: 0.7; }
+    
+    /* Modals & Buttons */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+    .modal { background: var(--color-panel); padding: 25px; border-radius: 12px; width: 450px; max-width: 95%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; }
+    .modal-header h3 { margin: 0; font-size: 1.3rem; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: var(--color-subtext); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #f8fafc; }
+    #dynamic-fields-container { background: #fff7ed; padding: 15px; border-radius: 8px; border: 1px solid #ffedd5; margin-bottom: 15px; display: none; }
+    #dynamic-fields-container label { color: var(--color-warning); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--color-border); }
+    button.btn-cancel { padding: 9px 15px; background: #f1f5f9; color: var(--color-subtext); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    button.btn-save { padding: 9px 15px; background: var(--color-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .btn-draw { padding: 9px; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: 0.2s; }
+    .btn-draw:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    
+    #legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; font-size: 12px; max-width: 1400px; margin-left: auto; margin-right: auto; padding: 10px 15px; background: white; border-radius: 8px; border: 1px solid var(--color-border); }
+    .leg-item { display: flex; align-items: center; gap: 6px; color: var(--color-subtext); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div id="imap-wrap">
+    <div id="layer-panel">
+      <div class="panel-tabs">
+        <button class="tab-btn active" id="tab-btn-explore" onclick="switchTab(&#39;explore&#39;)">🗺️ EXPLORE</button>
+        <button class="tab-btn" id="tab-btn-quiz" onclick="switchTab(&#39;quiz&#39;)">📝 QUIZ HUB</button>
+      </div>
+
+      <div id="tab-explore" class="tab-content active">
+        <div style="display:flex; gap:8px;">
+          <button id="draw-river-btn" class="btn-draw" onclick="startDraw(&#39;river&#39;)" style="flex:1; background:linear-gradient(135deg,#1565c0,#1976d2);">🌊 Draw River</button>
+          <button id="draw-soil-btn" class="btn-draw" onclick="startDraw(&#39;soil&#39;)" style="flex:1; background:linear-gradient(135deg,#a16207,#d97706);">🟫 Draw Soil</button>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">1. Filter by Feature</div>
+          <div class="chip-container" id="cat-chips"><div class="chip ">Mountain</div><div class="chip ">Peak</div><div class="chip ">River</div><div class="chip ">Soil</div><div class="chip ">Lake</div><div class="chip ">Wetland</div><div class="chip ">National Park</div><div class="chip ">Wildlife Sanctuary</div><div class="chip ">Tiger Reserve</div><div class="chip ">Dam</div><div class="chip ">City</div></div>
+          <div class="filter-title" style="margin-top:5px;">2. Filter by State/UT</div>
+          <div class="chip-container" id="state-chips" style="max-height: 140px; overflow-y: auto; padding-right: 5px;"><div class="chip ">Andhra Pradesh</div><div class="chip ">Arunachal Pradesh</div><div class="chip ">Assam</div><div class="chip ">Bihar</div><div class="chip ">Chhattisgarh</div><div class="chip ">Goa</div><div class="chip ">Gujarat</div><div class="chip ">Haryana</div><div class="chip ">Himachal Pradesh</div><div class="chip ">Jharkhand</div><div class="chip ">Karnataka</div><div class="chip ">Kerala</div><div class="chip ">Madhya Pradesh</div><div class="chip ">Maharashtra</div><div class="chip ">Manipur</div><div class="chip ">Meghalaya</div><div class="chip ">Mizoram</div><div class="chip ">Nagaland</div><div class="chip ">Odisha</div><div class="chip ">Punjab</div><div class="chip ">Rajasthan</div><div class="chip ">Sikkim</div><div class="chip ">Tamil Nadu</div><div class="chip ">Telangana</div><div class="chip ">Tripura</div><div class="chip ">Uttar Pradesh</div><div class="chip ">Uttarakhand</div><div class="chip ">West Bengal</div><div class="chip ">Andaman and Nicobar</div><div class="chip ">Chandigarh</div><div class="chip ">Dadra and Nagar Haveli</div><div class="chip ">Daman and Diu</div><div class="chip ">Delhi</div><div class="chip ">Jammu and Kashmir</div><div class="chip ">Ladakh</div><div class="chip ">Lakshadweep</div><div class="chip ">Puducherry</div></div>
+          <div class="filter-actions">
+            <button id="btn-clear" class="btn-filter btn-clear" onclick="clearFilters()" disabled="">Clear</button>
+            <button id="btn-apply" class="btn-filter btn-apply" onclick="applyFilters()" disabled="">Apply</button>
+          </div>
+        </div>
+
+        <div class="filter-section" style="margin-top: 15px; padding-top: 15px; border-top: 2px dashed var(--color-border);">
+          <div class="filter-title" style="text-align: center;">💾 Data Management</div>
+          <div style="display: flex; gap: 8px; margin-top: 5px;">
+            <button class="btn-filter btn-apply" onclick="exportData()" style="background:#475569;">📤 Export</button>
+            <button class="btn-filter btn-apply" onclick="document.getElementById(&#39;import-file&#39;).click()" style="background:#475569;">📥 Import</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+          </div>
+        </div>
+
+      </div>
+
+      <div id="tab-quiz" class="tab-content">
+        <div id="quiz-start-screen">
+          
+          <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed var(--color-border);">
+              <h3 style="font-size: 14px; margin: 0 0 10px 0; color: var(--color-primary);">🎯 Custom Quiz Settings</h3>
+              <p style="font-size: 11px; color: var(--color-subtext); margin: 0 0 10px 0;">Leave blank to test on ALL saved locations.</p>
+              
+              <div class="filter-title">Test by Feature</div>
+              <div class="chip-container" id="quiz-cat-chips"><div class="chip ">Mountain</div><div class="chip ">Peak</div><div class="chip ">River</div><div class="chip ">Lake</div><div class="chip ">Wetland</div><div class="chip ">National Park</div><div class="chip ">Wildlife Sanctuary</div><div class="chip ">Tiger Reserve</div><div class="chip ">Dam</div><div class="chip ">City</div></div>
+              
+              <div class="filter-title" style="margin-top:5px;">Test by State/UT</div>
+              <div class="chip-container" id="quiz-state-chips" style="max-height: 100px; overflow-y: auto; padding-right: 5px;"><div class="chip ">Andhra Pradesh</div><div class="chip ">Arunachal Pradesh</div><div class="chip ">Assam</div><div class="chip ">Bihar</div><div class="chip ">Chhattisgarh</div><div class="chip ">Goa</div><div class="chip ">Gujarat</div><div class="chip ">Haryana</div><div class="chip ">Himachal Pradesh</div><div class="chip ">Jharkhand</div><div class="chip ">Karnataka</div><div class="chip ">Kerala</div><div class="chip ">Madhya Pradesh</div><div class="chip ">Maharashtra</div><div class="chip ">Manipur</div><div class="chip ">Meghalaya</div><div class="chip ">Mizoram</div><div class="chip ">Nagaland</div><div class="chip ">Odisha</div><div class="chip ">Punjab</div><div class="chip ">Rajasthan</div><div class="chip ">Sikkim</div><div class="chip ">Tamil Nadu</div><div class="chip ">Telangana</div><div class="chip ">Tripura</div><div class="chip ">Uttar Pradesh</div><div class="chip ">Uttarakhand</div><div class="chip ">West Bengal</div><div class="chip ">Andaman and Nicobar</div><div class="chip ">Chandigarh</div><div class="chip ">Dadra and Nagar Haveli</div><div class="chip ">Daman and Diu</div><div class="chip ">Delhi</div><div class="chip ">Jammu and Kashmir</div><div class="chip ">Ladakh</div><div class="chip ">Lakshadweep</div><div class="chip ">Puducherry</div></div>
+              
+              <div class="filter-actions">
+                <button id="btn-quiz-clear" class="btn-filter btn-clear" onclick="clearQuizFilters()" disabled="">Clear</button>
+                <button id="btn-quiz-apply" class="btn-filter btn-apply" onclick="applyQuizFilters()" disabled="">Apply Settings</button>
+              </div>
+          </div>
+
+          <div style="margin-bottom: 18px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px;">
+            <label style="font-size: 13px; font-weight: 700; color: var(--color-primary); display: block; margin-bottom: 8px;">❓ How many questions?</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button onclick="setQuizCount(5,this)"  class="qcount-btn qcount-active">5</button>
+              <button onclick="setQuizCount(10,this)" class="qcount-btn">10</button>
+              <button onclick="setQuizCount(15,this)" class="qcount-btn">15</button>
+              <button onclick="setQuizCount(20,this)" class="qcount-btn">20</button>
+              <button onclick="setQuizCount(30,this)" class="qcount-btn">30</button>
+              <button onclick="setQuizCount(50,this)" class="qcount-btn">50</button>
+              <button onclick="setQuizCount(9999,this)" class="qcount-btn">All</button>
+            </div>
+          </div>
+
+          <h3 style="margin: 0 0 15px 0; text-align: center; color: var(--color-text);">Select Quiz Mode</h3>
+          <button class="quiz-menu-btn" onclick="startQuiz(&#39;mcq&#39;)">🏛️ UPSC Multiple Choice<br><span style="font-size:10px; font-weight:normal;">Tests your detailed knowledge.</span></button>
+          <button class="quiz-menu-btn" onclick="startQuiz(&#39;identify&#39;)">📍 Map Identification<br><span style="font-size:10px; font-weight:normal;">Click the correct feature on the map.</span></button>
+          <button class="quiz-menu-btn" onclick="startQuiz(&#39;fill&#39;)">✍️ Fill in the Blanks<br><span style="font-size:10px; font-weight:normal;">Type ALL required states.</span></button>
+          <button class="quiz-menu-btn" onclick="startQuiz(&#39;arrange&#39;)">🧭 Spatial Arrangement<br><span style="font-size:10px; font-weight:normal;">Order places North-South or East-West.</span></button>
+        </div>
+        
+        <div id="quiz-active-screen" style="display: none; height:100%; flex-direction:column;">
+          <button onclick="cancelQuiz()" style="background:none; border:none; color:var(--color-primary); cursor:pointer; padding:0; margin-bottom:10px; font-weight:bold; text-align:left;">← Exit Quiz</button>
+          <div class="quiz-hud"><span id="quiz-progress">Q 1/5</span><span id="quiz-score">Score: 0</span></div>
+          <p class="quiz-q-text" id="quiz-q-text">Loading...</p>
+          <div id="quiz-interactive-area" style="flex:1;"></div>
+          <div class="quiz-feedback" id="quiz-feedback"></div>
+          <button class="quiz-next-btn" id="quiz-next-btn" onclick="nextQuestion()">Next Question ➔</button>
+        </div>
+      </div>
+
+    </div>
+    
+    <div id="map-area">
+      <svg id="india-svg" viewBox="0 0 700 850" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs></defs><g><polygon points="157.33333333333334,10 214,10 247.99999999999997,38.62068965517241 259.3333333333333,81.55172413793105 214,124.48275862068965 191.33333333333334,110.17241379310346 146,95.86206896551724 134.66666666666666,67.24137931034483 123.33333333333333,38.62068965517241" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="247.99999999999997,38.62068965517241 327.3333333333333,52.93103448275862 304.6666666666667,124.48275862068965 259.3333333333333,153.1034482758621 214,124.48275862068965 259.3333333333333,81.55172413793105" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="191.33333333333334,110.17241379310346 214,124.48275862068965 247.99999999999997,153.1034482758621 236.66666666666666,181.72413793103448 202.66666666666666,181.72413793103448 180,167.41379310344826 191.33333333333334,138.79310344827587" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="134.66666666666666,138.79310344827587 180,167.41379310344826 202.66666666666666,181.72413793103448 168.66666666666666,210.34482758620692 123.33333333333333,210.34482758620692 112,167.41379310344826" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="180,167.41379310344826 191.33333333333334,138.79310344827587 191.33333333333334,167.41379310344826 214,238.9655172413793 180,238.9655172413793 168.66666666666666,210.34482758620692 202.66666666666666,181.72413793103448" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="209.46666666666658,241.8275862068966 223.0666666666668,241.8275862068966 223.0666666666668,256.1379310344828 209.46666666666658,256.1379310344828" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="236.66666666666666,181.72413793103448 282,196.0344827586207 304.6666666666667,210.34482758620692 293.33333333333337,238.9655172413793 247.99999999999997,238.9655172413793 214,238.9655172413793 191.33333333333334,167.41379310344826 191.33333333333334,181.72413793103448 236.66666666666666,181.72413793103448" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="214,238.9655172413793 247.99999999999997,238.9655172413793 293.33333333333337,238.9655172413793 372.6666666666667,281.8965517241379 372.6666666666667,324.8275862068965 327.3333333333333,353.44827586206895 282,353.44827586206895 236.66666666666666,324.8275862068965 202.66666666666666,296.2068965517242 191.33333333333334,267.58620689655174 214,238.9655172413793" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="372.6666666666667,281.8965517241379 440.66666666666663,296.2068965517242 463.3333333333333,324.8275862068965 418,367.7586206896552 372.6666666666667,367.7586206896552 327.3333333333333,353.44827586206895 372.6666666666667,324.8275862068965" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="55.333333333333336,238.9655172413793 123.33333333333333,210.34482758620692 168.66666666666666,210.34482758620692 180,238.9655172413793 191.33333333333334,267.58620689655174 202.66666666666666,296.2068965517242 168.66666666666666,382.0689655172414 123.33333333333333,410.68965517241384 100.66666666666667,410.68965517241384 55.333333333333336,353.44827586206895 21.333333333333336,296.2068965517242 32.66666666666667,238.9655172413793" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="10,382.0689655172414 55.333333333333336,353.44827586206895 100.66666666666667,410.68965517241384 123.33333333333333,439.3103448275862 146,467.9310344827586 123.33333333333333,496.551724137931 78,496.551724137931 55.333333333333336,467.9310344827586 21.333333333333336,439.3103448275862 10,382.0689655172414" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="168.66666666666666,382.0689655172414 236.66666666666666,324.8275862068965 282,353.44827586206895 327.3333333333333,353.44827586206895 372.6666666666667,367.7586206896552 350,439.3103448275862 304.6666666666667,467.9310344827586 259.3333333333333,467.9310344827586 214,467.9310344827586 168.66666666666666,439.3103448275862 146,439.3103448275862 146,410.68965517241384 168.66666666666666,382.0689655172414" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="372.6666666666667,367.7586206896552 418,367.7586206896552 463.3333333333333,410.68965517241384 440.66666666666663,439.3103448275862 418,439.3103448275862 372.6666666666667,453.6206896551724 350,439.3103448275862 372.6666666666667,367.7586206896552" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="463.3333333333333,296.2068965517242 463.3333333333333,324.8275862068965 463.3333333333333,410.68965517241384 440.66666666666663,439.3103448275862 440.66666666666663,467.9310344827586 463.3333333333333,482.2413793103448 485.99999999999994,439.3103448275862 497.3333333333333,382.0689655172414 474.6666666666667,339.1379310344828 463.3333333333333,296.2068965517242" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="463.3333333333333,276.1724137931035 474.6666666666667,270.448275862069 485.99999999999994,281.8965517241379 474.6666666666667,296.2068965517242 463.3333333333333,296.2068965517242" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="554,267.58620689655174 622,253.2758620689655 667.3333333333334,267.58620689655174 644.6666666666666,310.51724137931035 576.6666666666667,324.8275862068965 531.3333333333334,296.2068965517242 554,267.58620689655174" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="497.3333333333333,310.51724137931035 531.3333333333334,296.2068965517242 576.6666666666667,324.8275862068965 599.3333333333334,324.8275862068965 588,353.44827586206895 554,353.44827586206895 508.66666666666663,353.44827586206895 485.99999999999994,339.1379310344828 497.3333333333333,310.51724137931035" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="599.3333333333334,324.8275862068965 622,310.51724137931035 644.6666666666666,324.8275862068965 633.3333333333333,353.44827586206895 599.3333333333334,353.44827586206895 599.3333333333334,324.8275862068965" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="588,353.44827586206895 599.3333333333334,353.44827586206895 633.3333333333333,353.44827586206895 622,382.0689655172414 588,382.0689655172414 576.6666666666667,367.7586206896552 588,353.44827586206895" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="565.3333333333334,382.0689655172414 588,382.0689655172414 588,410.68965517241384 565.3333333333334,425 554,410.68965517241384 565.3333333333334,382.0689655172414" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="542.6666666666666,367.7586206896552 565.3333333333334,367.7586206896552 565.3333333333334,382.0689655172414 554,410.68965517241384 542.6666666666666,396.37931034482756 542.6666666666666,367.7586206896552" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="497.3333333333333,324.8275862068965 531.3333333333334,310.51724137931035 565.3333333333334,324.8275862068965 565.3333333333334,339.1379310344828 542.6666666666666,353.44827586206895 508.66666666666663,353.44827586206895 497.3333333333333,339.1379310344828 497.3333333333333,324.8275862068965" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="304.6666666666667,467.9310344827586 350,439.3103448275862 372.6666666666667,453.6206896551724 372.6666666666667,496.551724137931 327.3333333333333,539.4827586206897 282,525.1724137931035 282,496.551724137931 304.6666666666667,467.9310344827586" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="372.6666666666667,453.6206896551724 418,439.3103448275862 440.66666666666663,467.9310344827586 440.66666666666663,496.551724137931 418,539.4827586206897 395.3333333333333,553.7931034482758 350,525.1724137931035 327.3333333333333,539.4827586206897 372.6666666666667,496.551724137931 372.6666666666667,453.6206896551724" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="146,439.3103448275862 168.66666666666666,439.3103448275862 214,467.9310344827586 259.3333333333333,467.9310344827586 304.6666666666667,467.9310344827586 282,525.1724137931035 282,553.7931034482758 236.66666666666666,582.4137931034484 191.33333333333334,596.7241379310344 146,582.4137931034484 134.66666666666666,553.7931034482758 123.33333333333333,496.551724137931 146,467.9310344827586 146,439.3103448275862" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="236.66666666666666,525.1724137931035 282,525.1724137931035 304.6666666666667,568.1034482758621 282,611.0344827586207 259.3333333333333,625.344827586207 225.33333333333331,582.4137931034484 236.66666666666666,553.7931034482758 236.66666666666666,525.1724137931035" fill="#c8e6c9" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="282,611.0344827586207 327.3333333333333,611.0344827586207 372.6666666666667,611.0344827586207 395.3333333333333,553.7931034482758 418,539.4827586206897 440.66666666666663,582.4137931034484 395.3333333333333,639.655172413793 372.6666666666667,682.5862068965516 327.3333333333333,696.8965517241379 282,682.5862068965516 259.3333333333333,653.9655172413793 259.3333333333333,625.344827586207 282,611.0344827586207" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="141.4666666666666,616.7586206896552 157.33333333333334,616.7586206896552 157.33333333333334,645.3793103448276 141.4666666666666,645.3793103448276" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="146,582.4137931034484 191.33333333333334,596.7241379310344 236.66666666666666,582.4137931034484 259.3333333333333,625.344827586207 259.3333333333333,653.9655172413793 214,711.2068965517242 191.33333333333334,739.8275862068965 168.66666666666666,754.1379310344828 157.33333333333334,725.5172413793103 146,696.8965517241379 134.66666666666666,668.2758620689656 141.4666666666666,616.7586206896552 157.33333333333334,645.3793103448276 146,582.4137931034484" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="282,682.5862068965516 327.3333333333333,696.8965517241379 372.6666666666667,682.5862068965516 282,811.3793103448277 259.3333333333333,825.6896551724137 236.66666666666666,811.3793103448277 214,782.7586206896551 191.33333333333334,739.8275862068965 214,711.2068965517242 259.3333333333333,653.9655172413793 282,682.5862068965516" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon><polygon points="168.66666666666666,754.1379310344828 191.33333333333334,739.8275862068965 214,782.7586206896551 236.66666666666666,811.3793103448277 214,825.6896551724137 202.66666666666666,840 191.33333333333334,825.6896551724137 180,811.3793103448277 168.66666666666666,782.7586206896551 168.66666666666666,754.1379310344828" fill="#b8d4f0" stroke="#6e8fa8" stroke-width="0.8" opacity="0.85" pointer-events="none"></polygon></g><g></g><g></g><g><text x="157.33333333333334" y="670.9655172413793" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Western Ghats</text><polygon id="feature-102" points="157.33333333333334,641.9655172413793 148.33333333333334,659.9655172413793 166.33333333333334,659.9655172413793" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="135.21127319335955" y="28.971831321716238" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Pamir Knot</text><polygon id="feature-1778875052489" points="135.21127319335955,-0.02816867828376246 126.21127319335955,17.971831321716238 144.21127319335955,17.971831321716238" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="202.8168945312501" y="50.802818298339844" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Karakoram</text><polygon id="feature-1778875088899" points="202.8168945312501,21.802818298339844 193.8168945312501,39.802818298339844 211.8168945312501,39.802818298339844" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="223.23944091796866" y="81.78873443603513" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Ladakh</text><polygon id="feature-1778875102489" points="223.23944091796866,52.78873443603513 214.23944091796866,70.78873443603513 232.23944091796866,70.78873443603513" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="228.1690216064454" y="105.73239135742195" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Zaskar</text><polygon id="feature-1778875113735" points="228.1690216064454,76.73239135742195 219.1690216064454,94.73239135742195 237.1690216064454,94.73239135742195" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="201.40844726562514" y="119.81690216064449" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Greater Himalaya</text><polygon id="feature-1778875151107" points="201.40844726562514,90.81690216064449 192.40844726562514,108.81690216064449 210.40844726562514,108.81690216064449" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="160.56338500976565" y="135.30986022949222" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Pir Panjal</text><polygon id="feature-1778875166792" points="160.56338500976565,106.30986022949222 151.56338500976565,124.30986022949222 169.56338500976565,124.30986022949222" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="206.33802795410153" y="148.69013977050787" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Dhaula Dhar</text><polygon id="feature-1778875189950" points="206.33802795410153,119.69013977050787 197.33802795410153,137.69013977050787 215.33802795410153,137.69013977050787" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="189.4366149902344" y="189.53521728515622" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Shiwalik</text><polygon id="feature-1778875200724" points="189.4366149902344,160.53521728515622 180.4366149902344,178.53521728515622 198.4366149902344,178.53521728515622" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="314.78872680664074" y="158.54930114746097" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Kailash</text><polygon id="feature-1778875213562" points="314.78872680664074,129.54930114746097 305.78872680664074,147.54930114746097 323.78872680664074,147.54930114746097" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="109.15493011474602" y="303.6197204589844" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Aravali</text><polygon id="feature-1778875250925" points="109.15493011474602,274.6197204589844 100.15493011474602,292.6197204589844 118.15493011474602,292.6197204589844" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="551.4084472656251" y="300.8028259277345" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Dafla</text><polygon id="feature-1778875318398" points="551.4084472656251,271.8028259277345 542.4084472656251,289.8028259277345 560.4084472656251,289.8028259277345" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="564.7887573242188" y="292.35211181640625" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Miri</text><polygon id="feature-1778875326323" points="564.7887573242188,263.35211181640625 555.7887573242188,281.35211181640625 573.7887573242188,281.35211181640625" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="581.6901245117188" y="286.01409912109375" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Abhor</text><polygon id="feature-1778875334217" points="581.6901245117188,257.01409912109375 572.6901245117188,275.01409912109375 590.6901245117188,275.01409912109375" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="599.2957763671874" y="284.60562133789057" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mishmi</text><polygon id="feature-1778875346160" points="599.2957763671874,255.60562133789057 590.2957763671874,273.60562133789057 608.2957763671874,273.60562133789057" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="512.6760864257811" y="365.59155273437506" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Garo</text><polygon id="feature-1778875373414" points="512.6760864257811,336.59155273437506 503.67608642578114,354.59155273437506 521.6760864257811,354.59155273437506" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="526.7605590820312" y="362.774658203125" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Khashi</text><polygon id="feature-1778875382924" points="526.7605590820312,333.774658203125 517.7605590820312,351.774658203125 535.7605590820312,351.774658203125" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="541.5493164062499" y="358.549285888672" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Jantia</text><polygon id="feature-1778875392562" points="541.5493164062499,329.549285888672 532.5493164062499,347.549285888672 550.5493164062499,347.549285888672" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="563.3803100585938" y="340.2394409179688" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mikir</text><polygon id="feature-1778875406864" points="563.3803100585938,311.2394409179688 554.3803100585938,329.2394409179688 572.3803100585938,329.2394409179688" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="581.6901245117188" y="333.1971740722656" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Patkai Bum</text><polygon id="feature-1778875419551" points="581.6901245117188,304.1971740722656 572.6901245117188,322.1971740722656 590.6901245117188,322.1971740722656" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="588.0281982421876" y="369.1126708984376" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Barail</text><polygon id="feature-1778875432693" points="588.0281982421876,340.1126708984376 579.0281982421876,358.1126708984376 597.0281982421876,358.1126708984376" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="568.3098754882814" y="417.7042236328125" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mizo Hill</text><polygon id="feature-1778875444267" points="568.3098754882814,388.7042236328125 559.3098754882814,406.7042236328125 577.3098754882814,406.7042236328125" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="409.15493774414074" y="390.9436645507813" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Rajmahal Hill</text><polygon id="feature-1778875495468" points="409.15493774414074,361.9436645507813 400.15493774414074,379.9436645507813 418.15493774414074,379.9436645507813" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="361.26760864257807" y="403.6197204589844" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Ramgarh hill</text><polygon id="feature-1778875512489" points="361.26760864257807,374.6197204589844 352.26760864257807,392.6197204589844 370.26760864257807,392.6197204589844" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="408.45071411132807" y="484.6056213378907" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Garjat hill</text><polygon id="feature-1778875528288" points="408.45071411132807,455.6056213378907 399.45071411132807,473.6056213378907 417.45071411132807,473.6056213378907" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="408.45071411132807" y="549.3943481445312" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Nayagarh Hill</text><polygon id="feature-1778875542614" points="408.45071411132807,520.3943481445312 399.45071411132807,538.3943481445312 417.45071411132807,538.3943481445312" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="368.309844970703" y="654.3239135742188" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Nalamala hill</text><polygon id="feature-1778875600766" points="368.309844970703,625.3239135742188 359.309844970703,643.3239135742188 377.309844970703,643.3239135742188" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="352.1126708984376" y="694.4647827148438" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Palconda range</text><polygon id="feature-1778875618499" points="352.1126708984376,665.4647827148438 343.1126708984376,683.4647827148438 361.1126708984376,683.4647827148438" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="317.60562133789074" y="722.6337890625" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Javadi</text><polygon id="feature-1778875631905" points="317.60562133789074,693.6337890625 308.60562133789074,711.6337890625 326.60562133789074,711.6337890625" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="302.1126708984374" y="758.54931640625" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Shevaroy</text><polygon id="feature-1778875645816" points="302.1126708984374,729.54931640625 293.1126708984374,747.54931640625 311.1126708984374,747.54931640625" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="240.14083862304668" y="784.6056518554688" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Anaimudi Hill</text><polygon id="feature-1778875671669" points="240.14083862304668,755.6056518554688 231.14083862304668,773.6056518554688 249.14083862304668,773.6056518554688" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="223.94366455078134" y="815.591552734375" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Cardmom Hill</text><polygon id="feature-1778875686994" points="223.94366455078134,786.591552734375 214.94366455078134,804.591552734375 232.94366455078134,804.591552734375" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="203.5211334228516" y="793.7605590820312" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Anamalai Hill</text><polygon id="feature-1778875710751" points="203.5211334228516,764.7605590820312 194.5211334228516,782.7605590820312 212.5211334228516,782.7605590820312" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="208.4506988525392" y="762.0704345703125" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Nilgiri Hill</text><polygon id="feature-1778875723692" points="208.4506988525392,733.0704345703125 199.4506988525392,751.0704345703125 217.4506988525392,751.0704345703125" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="180.98591613769543" y="700.0985717773438" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Baba Budan Hill</text><polygon id="feature-1778875736020" points="180.98591613769543,671.0985717773438 171.98591613769543,689.0985717773438 189.98591613769543,689.0985717773438" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="173.9436645507814" y="540.9436645507812" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Harishchandra</text><polygon id="feature-1778875896310" points="173.9436645507814,511.94366455078125 164.9436645507814,529.9436645507812 182.9436645507814,529.9436645507812" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="200.70422363281253" y="519.1126708984375" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Balaghat range</text><polygon id="feature-1778875906348" points="200.70422363281253,490.1126708984375 191.70422363281253,508.1126708984375 209.70422363281253,508.1126708984375" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="183.09858703613273" y="490.2394409179688" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Ajanta range</text><polygon id="feature-1778875915379" points="183.09858703613273,461.2394409179688 174.09858703613273,479.2394409179688 192.09858703613273,479.2394409179688" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="77.4647903442382" y="505.02816772460943" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Gir range</text><polygon id="feature-1778875938992" points="77.4647903442382,476.02816772460943 68.4647903442382,494.02816772460943 86.4647903442382,494.02816772460943" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="77.4647903442382" y="477.56338500976557" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Girnar range</text><polygon id="feature-1778875951655" points="77.4647903442382,448.56338500976557 68.4647903442382,466.56338500976557 86.4647903442382,466.56338500976557" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="87.32394409179689" y="445.1690063476563" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mandav range</text><polygon id="feature-1778875964052" points="87.32394409179689,416.1690063476563 78.32394409179689,434.1690063476563 96.32394409179689,434.1690063476563" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="25.35211181640621" y="405.02816772460943" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Kachh hill</text><polygon id="feature-1778875977546" points="25.35211181640621,376.02816772460943 16.35211181640621,394.02816772460943 34.35211181640621,394.02816772460943" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="197.88732910156256" y="427.5633850097656" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Vindhya range</text><polygon id="feature-1778876005271" points="197.88732910156256,398.5633850097656 188.88732910156256,416.5633850097656 206.88732910156256,416.5633850097656" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="236.61972045898438" y="420.5211181640625" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Kaimur range</text><polygon id="feature-1778876248541" points="236.61972045898438,391.5211181640625 227.61972045898438,409.5211181640625 245.61972045898438,409.5211181640625" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="185.9154968261718" y="464.18310546874994" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Satpura</text><polygon id="feature-1778876280578" points="185.9154968261718,435.18310546874994 176.9154968261718,453.18310546874994 194.9154968261718,453.18310546874994" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="216.90141296386727" y="460.6619567871094" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Gawaligarh</text><polygon id="feature-1778876301936" points="216.90141296386727,431.6619567871094 207.90141296386727,449.6619567871094 225.90141296386727,449.6619567871094" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="245.77464294433605" y="462.0704345703125" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mahadeo</text><polygon id="feature-1778876315350" points="245.77464294433605,433.0704345703125 236.77464294433605,451.0704345703125 254.77464294433605,451.0704345703125" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="135.91549682617185" y="456.4366149902343" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Mandav Hill</text><polygon id="feature-1778876591946" points="135.91549682617185,427.4366149902343 126.91549682617185,445.4366149902343 144.91549682617185,445.4366149902343" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="154.22535705566398" y="487.4225463867188" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Satamala</text><polygon id="feature-1778876617892" points="154.22535705566398,458.4225463867188 145.22535705566398,476.4225463867188 163.22535705566398,476.4225463867188" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon><text x="276.0563354492189" y="820.5211181640625" font-size="8.5" font-weight="600" fill="#5c3d1a" text-anchor="middle" pointer-events="none">Palni Hill</text><polygon id="feature-1778876705576" points="276.0563354492189,791.5211181640625 267.0563354492189,809.5211181640625 285.0563354492189,809.5211181640625" fill="#8b7355" stroke="#5c3d1a" stroke-width="1" cursor="pointer"><title></title></polygon></g><g><polygon id="feature-1778875128077" points="176.0563354492187,47.225353240966726 171.0563354492187,58.225353240966726 181.0563354492187,58.225353240966726" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778875230040" points="284.507049560547,187.3661956787109 279.507049560547,198.3661956787109 289.507049560547,198.3661956787109" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778875266068" points="64.78873443603511,283.14083862304676 59.788734436035114,294.14083862304676 69.78873443603511,294.14083862304676" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778875302509" points="469.01409912109375,276.09860229492193 464.01409912109375,287.09860229492193 474.01409912109375,287.09860229492193" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778875356303" points="620.4225463867189,251.45071411132812 615.4225463867189,262.4507141113281 625.4225463867189,262.4507141113281" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778875460097" points="620.4225463867189,337.3662109375 615.4225463867189,348.3662109375 625.4225463867189,348.3662109375" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon><polygon id="feature-1778876352433" points="267.6056213378908,439.4788818359375 262.6056213378908,450.4788818359375 272.6056213378908,450.4788818359375" fill="#4a2c18" stroke="#fff" stroke-width="0.5" cursor="pointer"><title></title></polygon></g><g></g><g></g><g><rect id="feature-301" x="250.11999999999992" y="219.7965517241379" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,254.11999999999992,223.7965517241379)" cursor="pointer"><title></title></rect><rect id="feature-1778879675512" x="305.8591613769532" y="269.23944091796875" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,309.8591613769532,273.23944091796875)" cursor="pointer"><title></title></rect><rect id="feature-1778881047350" x="475.57745361328125" y="393.18310546875" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,479.57745361328125,397.18310546875)" cursor="pointer"><title></title></rect><rect id="feature-1778881103375" x="284.0281677246093" y="243.88732910156244" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,288.0281677246093,247.88732910156244)" cursor="pointer"><title></title></rect><rect id="feature-1778881138658" x="276.9859008789062" y="407.2676086425781" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,280.9859008789062,411.2676086425781)" cursor="pointer"><title></title></rect><rect id="feature-1778881160607" x="238.95774841308608" y="359.3802795410157" width="8" height="8" fill="#2e7d32" stroke="#a5d6a7" stroke-width="1" transform="rotate(45,242.95774841308608,363.3802795410157)" cursor="pointer"><title></title></rect></g><g><polygon id="feature-1778879595437" points="249.29577636718747,193.29577636718747 254.49577636718746,202.29577636718747 244.09577636718748,202.29577636718747" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778879738375" points="135.21127319335955,262.30984497070307 140.41127319335953,271.30984497070307 130.01127319335956,271.30984497070307" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778880741703" points="178.16902160644545,763.0140991210938 183.36902160644544,772.0140991210938 172.96902160644547,772.0140991210938" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778880778698" points="423.94366455078114,497.5211181640625 429.1436645507811,506.5211181640625 418.74366455078115,506.5211181640625" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778880810926" points="459.1549377441406,460.1971740722657 464.3549377441406,469.1971740722657 453.95493774414064,469.1971740722657" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778880846617" points="335.2112731933593,608.7887573242188 340.4112731933593,617.7887573242188 330.01127319335933,617.7887573242188" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778880887420" points="145.07041931152352,505.2676086425782 150.2704193115235,514.2676086425781 139.87041931152353,514.2676086425781" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon><polygon id="feature-1778881004013" points="521.1267700195312,314.4225463867188 526.3267700195313,323.4225463867188 515.9267700195312,323.4225463867188" fill="#7cb342" stroke="#33691e" stroke-width="1" cursor="pointer"><title></title></polygon></g><g><rect id="feature-1778876866450" x="210.4929504394532" y="147.70422363281253" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778876922826" x="226.690139770508" y="192.7746429443359" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778876971532" x="471.76055908203136" y="275.16900634765625" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877028228" x="619.6478881835939" y="285.02816772460943" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877095579" x="532.3239135742188" y="323.76055908203125" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877127518" x="552.7464599609376" y="347.00000000000006" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877156244" x="396.40844726562494" y="500.5211181640625" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877191311" x="321.7605590820312" y="446.2957763671875" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877243511" x="317.53521728515625" y="639.2535400390625" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877262437" x="278.0986022949217" y="726.5774536132812" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877292114" x="221.7605590820313" y="730.8027954101562" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877320222" x="198.5211334228516" y="720.9436645507812" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877346497" x="203.4506988525392" y="372.3521118164063" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877366359" x="228.09858703613267" y="378.6901550292969" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877389124" x="43.59154891967768" y="423.7605590820313" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877413962" x="466.1267700195314" y="436.4366149902343" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect><rect id="feature-1778877550990" x="501.3380432128906" y="754.7464599609375" width="10" height="6" fill="#546e7a" stroke="#cfd8dc" stroke-width="1" cursor="pointer"><title></title></rect></g><g></g><g><circle id="feature-tr-301" cx="254.11999999999992" cy="223.7965517241379" r="8" fill="none" stroke="#e65100" stroke-width="2.5" cursor="pointer"><title></title></circle><circle id="feature-tr-1778881047350" cx="479.57745361328125" cy="397.18310546875" r="8" fill="none" stroke="#e65100" stroke-width="2.5" cursor="pointer"><title></title></circle><circle id="feature-tr-1778881103375" cx="288.0281677246093" cy="247.88732910156244" r="8" fill="none" stroke="#e65100" stroke-width="2.5" cursor="pointer"><title></title></circle><circle id="feature-tr-1778881138658" cx="280.9859008789062" cy="411.2676086425781" r="8" fill="none" stroke="#e65100" stroke-width="2.5" cursor="pointer"><title></title></circle><circle id="feature-tr-1778881160607" cx="242.95774841308608" cy="363.3802795410157" r="8" fill="none" stroke="#e65100" stroke-width="2.5" cursor="pointer"><title></title></circle></g></svg>
+      <div id="tip"><button id="tip-close" onclick="hideTip()">✖</button><div id="tip-content"></div></div>
+      
+      <div id="draw-toolbar">
+        <span id="draw-mode-indicator" style="opacity:0.9; color:#fbbf24; font-weight:bold;">Drawing</span>
+        <span style="opacity:0.85;">| Click to add points &nbsp;•&nbsp; Double-click to finish</span>
+        <span id="draw-pt-count" style="background:rgba(255,255,255,0.2); border-radius:5px; padding:2px 8px; font-weight:700;">0 pts</span>
+        <button onclick="undoDrawPoint()" style="background:rgba(255,255,255,0.18); color:white; border:none; border-radius:6px; padding:5px 10px; cursor:pointer; font-size:12px;">↩ Undo</button>
+        <button onclick="finishDraw()" style="background:#4caf50; color:white; border:none; border-radius:6px; padding:5px 12px; cursor:pointer; font-weight:700; font-size:13px;">✓ Done</button>
+        <button onclick="cancelDraw()" style="background:rgba(255,255,255,0.18); color:white; border:none; border-radius:6px; padding:5px 10px; cursor:pointer; font-size:12px;">✕ Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="legend"><div class="leg-item"><span style="width: 10px; height: 8px; background: rgb(184, 212, 240); display: inline-block;"></span> Coastal state</div><div class="leg-item"><span style="width: 10px; height: 8px; background: rgb(200, 230, 201); display: inline-block;"></span> Landlocked state</div><div class="leg-item"><span style="width: 10px; height: 8px; background: rgb(200, 164, 110); display: inline-block;"></span> Soil Region</div><div class="leg-item"><span style="width: 0px; height: 0px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid rgb(139, 115, 85); display: inline-block;"></span> Mountain range</div><div class="leg-item"><span style="width: 0px; height: 0px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid rgb(74, 44, 24); display: inline-block;"></span> Peak</div><div class="leg-item"><span style="width: 16px; height: 3px; background: rgb(21, 101, 192); display: inline-block; border-radius: 2px;"></span> River</div><div class="leg-item"><span style="width: 10px; height: 10px; border-radius: 50%; background: rgb(74, 144, 217); display: inline-block; flex-shrink: 0;"></span> Lake</div><div class="leg-item"><span style="width: 10px; height: 10px; border-radius: 50%; background: rgb(76, 175, 125); display: inline-block; flex-shrink: 0;"></span> Wetland</div><div class="leg-item"><span style="width: 10px; height: 8px; background: rgb(46, 125, 50); display: inline-block;"></span> National park</div><div class="leg-item"><span style="width: 0px; height: 0px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid rgb(124, 179, 66); display: inline-block;"></span> Wildlife sanctuary</div><div class="leg-item"><span style="width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgb(230, 81, 0); display: inline-block; flex-shrink: 0; box-sizing: border-box;"></span> Tiger Reserve</div><div class="leg-item"><span style="width: 10px; height: 8px; background: rgb(84, 110, 122); display: inline-block;"></span> Dam</div><div class="leg-item"><span style="width: 10px; height: 10px; border-radius: 50%; background: rgb(136, 14, 79); display: inline-block; flex-shrink: 0;"></span> City</div></div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Feature</h3>
+        <button style="background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0; color:#94a3b8;" onclick="closeModal()">×</button>
+      </div>
+      <input type="hidden" id="place-id"><input type="hidden" id="place-lat"><input type="hidden" id="place-lng">
+      <div class="form-group"><label>Name</label><input type="text" id="place-name" placeholder="e.g., Godavari, Alluvial Plains" required=""></div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="place-category" onchange="updateDynamicFields()">
+          <option value="Select" disabled="" selected="">-- Select --</option>
+          <option value="Mountain">Mountain Range</option><option value="Peak">Mountain Peak</option>
+          <option value="River">River</option><option value="Soil">Soil Region</option>
+          <option value="Lake">Lake</option><option value="Wetland">Wetland</option>
+          <option value="National Park">National Park</option><option value="Wildlife Sanctuary">Wildlife Sanctuary</option>
+          <option value="Dam">Dam</option><option value="City">City</option>
+        </select>
+      </div>
+      <div id="dynamic-fields-container"></div>
+      <div class="form-group"><label>Notes / Description</label><textarea id="place-desc" rows="2"></textarea></div>
+      <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="savePlace()">Save</button></div>
+    </div>
+  </div>
+
+<script>
+// --- CORE SVG & MATH ---
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('india-svg');
+const tip = document.getElementById('tip');
+
+function el(tag, attrs={}){ 
+    const e = document.createElementNS(SVG_NS, tag); 
+    for(const [k,v] of Object.entries(attrs)) e.setAttribute(k, v); 
+    return e; 
+}
+function proj(lng, lat){ const x = ((lng - 68) / 30) * 680 + 10; const y = ((37 - lat) / 29) * 830 + 10; return [x, y]; }
+function unproj(x, y){ const lng = ((x - 10) / 680) * 30 + 68; const lat = 37 - ((y - 10) / 830) * 29; return [lng, lat]; }
+
+// ─── BACKGROUND STATES ────────────────────────────────────────────────
+const STATES = [
+  {name:'Jammu & Kashmir',pts:[[74.5,37],[77,37],[78.5,36],[79,34.5],[77,33],[76,33.5],[74,34],[73.5,35],[73,36]]},
+  {name:'Ladakh',pts:[[78.5,36],[82,35.5],[81,33],[79,32],[77,33],[79,34.5]]},
+  {name:'Himachal Pradesh',pts:[[76,33.5],[77,33],[78.5,32],[78,31],[76.5,31],[75.5,31.5],[76,32.5]]},
+  {name:'Punjab',pts:[[73.5,32.5],[75.5,31.5],[76.5,31],[75,30],[73,30],[72.5,31.5]]},
+  {name:'Haryana',pts:[[75.5,31.5],[76,32.5],[76,31.5],[77,29],[75.5,29],[75,30],[76.5,31]]},
+  {name:'Delhi',pts:[[76.8,28.9],[77.4,28.9],[77.4,28.4],[76.8,28.4]]},
+  {name:'Uttarakhand',pts:[[78,31],[80,30.5],[81,30],[80.5,29],[78.5,29],[77,29],[76,31.5],[76,31],[78,31]]},
+  {name:'Uttar Pradesh',pts:[[77,29],[78.5,29],[80.5,29],[84,27.5],[84,26],[82,25],[80,25],[78,26],[76.5,27],[76,28],[77,29]]},
+  {name:'Bihar',pts:[[84,27.5],[87,27],[88,26],[86,24.5],[84,24.5],[82,25],[84,26]]},
+  {name:'Rajasthan',pts:[[70,29],[73,30],[75,30],[75.5,29],[76,28],[76.5,27],[75,24],[73,23],[72,23],[70,25],[68.5,27],[69,29]]},
+  {name:'Gujarat',coastal:true,pts:[[68,24],[70,25],[72,23],[73,22],[74,21],[73,20],[71,20],[70,21],[68.5,22],[68,24]]},
+  {name:'Madhya Pradesh',pts:[[75,24],[78,26],[80,25],[82,25],[84,24.5],[83,22],[81,21],[79,21],[77,21],[75,22],[74,22],[74,23],[75,24]]},
+  {name:'Jharkhand',pts:[[84,24.5],[86,24.5],[88,23],[87,22],[86,22],[84,21.5],[83,22],[84,24.5]]},
+  {name:'West Bengal',coastal:true,pts:[[88,27],[88,26],[88,23],[87,22],[87,21],[88,20.5],[89,22],[89.5,24],[88.5,25.5],[88,27]]},
+  {name:'Sikkim',pts:[[88,27.7],[88.5,27.9],[89,27.5],[88.5,27],[88,27]]},
+  {name:'Arunachal Pradesh',pts:[[92,28],[95,28.5],[97,28],[96,26.5],[93,26],[91,27],[92,28]]},
+  {name:'Assam',pts:[[89.5,26.5],[91,27],[93,26],[94,26],[93.5,25],[92,25],[90,25],[89,25.5],[89.5,26.5]]},
+  {name:'Nagaland',pts:[[94,26],[95,26.5],[96,26],[95.5,25],[94,25],[94,26]]},
+  {name:'Manipur',pts:[[93.5,25],[94,25],[95.5,25],[95,24],[93.5,24],[93,24.5],[93.5,25]]},
+  {name:'Mizoram',pts:[[92.5,24],[93.5,24],[93.5,23],[92.5,22.5],[92,23],[92.5,24]]},
+  {name:'Tripura',pts:[[91.5,24.5],[92.5,24.5],[92.5,24],[92,23],[91.5,23.5],[91.5,24.5]]},
+  {name:'Meghalaya',pts:[[89.5,26],[91,26.5],[92.5,26],[92.5,25.5],[91.5,25],[90,25],[89.5,25.5],[89.5,26]]},
+  {name:'Chhattisgarh',pts:[[81,21],[83,22],[84,21.5],[84,20],[82,18.5],[80,19],[80,20],[81,21]]},
+  {name:'Odisha',coastal:true,pts:[[84,21.5],[86,22],[87,21],[87,20],[86,18.5],[85,18],[83,19],[82,18.5],[84,20],[84,21.5]]},
+  {name:'Maharashtra',coastal:true,pts:[[74,22],[75,22],[77,21],[79,21],[81,21],[80,19],[80,18],[78,17],[76,16.5],[74,17],[73.5,18],[73,20],[74,21],[74,22]]},
+  {name:'Telangana',pts:[[78,19],[80,19],[81,17.5],[80,16],[79,15.5],[77.5,17],[78,18],[78,19]]},
+  {name:'Andhra Pradesh',coastal:true,pts:[[80,16],[82,16],[84,16],[85,18],[86,18.5],[87,17],[85,15],[84,13.5],[82,13],[80,13.5],[79,14.5],[79,15.5],[80,16]]},
+  {name:'Goa',coastal:true,pts:[[73.8,15.8],[74.5,15.8],[74.5,14.8],[73.8,14.8]]},
+  {name:'Karnataka',coastal:true,pts:[[74,17],[76,16.5],[78,17],[79,15.5],[79,14.5],[77,12.5],[76,11.5],[75,11],[74.5,12],[74,13],[73.5,14],[73.8,15.8],[74.5,14.8],[74,17]]},
+  {name:'Tamil Nadu',coastal:true,pts:[[80,13.5],[82,13],[84,13.5],[80,9],[79,8.5],[78,9],[77,10],[76,11.5],[77,12.5],[79,14.5],[80,13.5]]},
+  {name:'Kerala',coastal:true,pts:[[75,11],[76,11.5],[77,10],[78,9],[77,8.5],[76.5,8],[76,8.5],[75.5,9],[75,10],[75,11]]},
+];
+
+const SEED_DATA = [
+  {id:101, category:'Mountain', name:'Himalayas', lat:33, lng:76.5, type:'Fold mountain', states:'Jammu and Kashmir, Himachal Pradesh, Uttarakhand, Sikkim, Arunachal Pradesh'},
+  {id:102, category:'Mountain', name:'Western Ghats', lat:14.5, lng:74.5, type:'Fault-block', states:'Gujarat, Maharashtra, Goa, Karnataka, Kerala, Tamil Nadu'},
+  {id:201, category:'Peak', name:'K2', lat:35.88, lng:76.51, elev:'8611', range:'Karakoram', states:'Ladakh'},
+  {id:301, category:'National Park', name:'Jim Corbett NP', lat:29.53, lng:78.77, states:'Uttarakhand', tigerReserve:'Corbett Tiger Reserve'},
+  {id:401, category:'River', name:'Ganga', type:'Main River', origin:'Gangotri', mouth:'Bay of Bengal', states:'Uttarakhand, Uttar Pradesh, Bihar, West Bengal', tributaries:'Yamuna, Son, Kosi', waypoints:[[79,31], [80,29.5], [82,27], [84,25.5], [86,25], [88,24], [89,22.5]]}
+];
+
+let places = JSON.parse(localStorage.getItem('upsc_atlas_final')) || SEED_DATA;
+const ALL_INDIA_STATES = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar", "Chandigarh", "Dadra and Nagar Haveli", "Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"];
+
+// ─── DATA MANAGEMENT (EXPORT / IMPORT) ──────────────────────────────────────
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(places));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "upsc_atlas_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedPlaces = JSON.parse(e.target.result);
+            if (Array.isArray(importedPlaces)) {
+                places = importedPlaces;
+                localStorage.setItem('upsc_atlas_final', JSON.stringify(places));
+                initFilters();
+                initQuizFilters();
+                renderMap();
+                alert("Data successfully imported! " + places.length + " features loaded.");
+            } else { alert("Invalid file format."); }
+        } catch (err) { alert("Error reading file."); }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // reset
+}
+
+// ─── TABS & STATE MANAGEMENT ─────────────────────────────────────────────────
+let activeTab = 'explore';
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-btn-explore').classList.toggle('active', tab === 'explore');
+  document.getElementById('tab-btn-quiz').classList.toggle('active', tab === 'quiz');
+  document.getElementById('tab-explore').style.display = tab === 'explore' ? 'flex' : 'none';
+  document.getElementById('tab-quiz').style.display = tab === 'quiz' ? 'flex' : 'none';
+  
+  // Hide entire legend during Quiz Mode!
+  document.getElementById('legend').style.display = tab === 'explore' ? 'flex' : 'none';
+  
+  if(tab === 'explore' && quizMode !== 'none') cancelQuiz();
+  renderMap(); 
+}
+
+// ─── EXPLORE FILTER LOGIC ─────────────────────────────────────────────────────
+const ALL_CATEGORIES = ['Mountain', 'Peak', 'River', 'Soil', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City'];
+let activeCategories = new Set(); let activeStates = new Set();     
+let appliedCategories = new Set(); let appliedStates = new Set();     
+
+function initFilters() {
+    const catCont = document.getElementById('cat-chips'); const stateCont = document.getElementById('state-chips');
+    catCont.innerHTML = ''; stateCont.innerHTML = '';
+    ALL_CATEGORIES.forEach(cat => {
+        const chip = document.createElement('div'); chip.className = `chip ${activeCategories.has(cat) ? 'active' : ''}`; chip.textContent = cat;
+        chip.onclick = () => { if(activeCategories.has(cat)) activeCategories.delete(cat); else activeCategories.add(cat); checkFilterState(); initFilters(); };
+        catCont.appendChild(chip);
+    });
+    ALL_INDIA_STATES.forEach(state => {
+        const chip = document.createElement('div'); chip.className = `chip ${activeStates.has(state) ? 'active' : ''}`; chip.textContent = state;
+        chip.onclick = () => { if(activeStates.has(state)) activeStates.delete(state); else activeStates.add(state); checkFilterState(); initFilters(); };
+        stateCont.appendChild(chip);
+    });
+    initQuizFilters();
+}
+
+function checkFilterState() {
+    const btnApply = document.getElementById('btn-apply'); const btnClear = document.getElementById('btn-clear');
+    const catChanged = (activeCategories.size !== appliedCategories.size) || [...activeCategories].some(x => !appliedCategories.has(x));
+    const stateChanged = (activeStates.size !== appliedStates.size) || [...activeStates].some(x => !appliedStates.has(x));
+    btnApply.disabled = !(catChanged || stateChanged);
+    btnClear.disabled = (activeCategories.size === 0 && activeStates.size === 0 && appliedCategories.size === 0 && appliedStates.size === 0);
+}
+function applyFilters() { appliedCategories = new Set(activeCategories); appliedStates = new Set(activeStates); checkFilterState(); renderMap(); }
+function clearFilters() { activeCategories.clear(); activeStates.clear(); appliedCategories.clear(); appliedStates.clear(); initFilters(); checkFilterState(); renderMap(); }
+
+// ─── QUIZ FILTER LOGIC ───────────────────────────────────────────────────────
+const QUIZ_CATEGORIES = ['Mountain', 'Peak', 'River', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City'];
+let quizQuestionCount = 5;
+function setQuizCount(n, btn) {
+  quizQuestionCount = n;
+  document.querySelectorAll('.qcount-btn').forEach(b => b.classList.remove('qcount-active'));
+  btn.classList.add('qcount-active');
+}
+let quizActiveCategories = new Set(); let quizActiveStates = new Set();     
+let quizAppliedCategories = new Set(); let quizAppliedStates = new Set();  
+
+function initQuizFilters() {
+    const catCont = document.getElementById('quiz-cat-chips'); const stateCont = document.getElementById('quiz-state-chips');
+    catCont.innerHTML = ''; stateCont.innerHTML = '';
+    QUIZ_CATEGORIES.forEach(cat => {
+        const chip = document.createElement('div'); chip.className = `chip ${quizActiveCategories.has(cat) ? 'active' : ''}`; chip.textContent = cat;
+        chip.onclick = () => { if(quizActiveCategories.has(cat)) quizActiveCategories.delete(cat); else quizActiveCategories.add(cat); checkQuizFilterState(); initQuizFilters(); };
+        catCont.appendChild(chip);
+    });
+    ALL_INDIA_STATES.forEach(state => {
+        const chip = document.createElement('div'); chip.className = `chip ${quizActiveStates.has(state) ? 'active' : ''}`; chip.textContent = state;
+        chip.onclick = () => { if(quizActiveStates.has(state)) quizActiveStates.delete(state); else quizActiveStates.add(state); checkQuizFilterState(); initQuizFilters(); };
+        stateCont.appendChild(chip);
+    });
+}
+function checkQuizFilterState() {
+    const btnApply = document.getElementById('btn-quiz-apply'); const btnClear = document.getElementById('btn-quiz-clear');
+    const catChanged = (quizActiveCategories.size !== quizAppliedCategories.size) || [...quizActiveCategories].some(x => !quizAppliedCategories.has(x));
+    const stateChanged = (quizActiveStates.size !== quizAppliedStates.size) || [...quizActiveStates].some(x => !quizAppliedStates.has(x));
+    btnApply.disabled = !(catChanged || stateChanged);
+    btnClear.disabled = (quizActiveCategories.size === 0 && quizActiveStates.size === 0 && quizAppliedCategories.size === 0 && quizAppliedStates.size === 0);
+}
+function applyQuizFilters() { quizAppliedCategories = new Set(quizActiveCategories); quizAppliedStates = new Set(quizActiveStates); checkQuizFilterState(); alert("Quiz Custom Settings Applied!\nSelect a quiz mode to begin."); }
+function clearQuizFilters() { quizActiveCategories.clear(); quizActiveStates.clear(); quizAppliedCategories.clear(); quizAppliedStates.clear(); initQuizFilters(); checkQuizFilterState(); }
+
+// ─── DRAWING ENGINE LOGIC ────────────────────────────────────────────────────
+let drawMode = 'none'; let drawWaypoints = []; let drawSvgPts = []; let drawPreviewG = null;  
+
+function catmullRomPath(pts) {
+  if (pts.length < 2) return ''; if (pts.length === 2) return `M ${pts[0][0]} ${pts[0][1]} L ${pts[1][0]} ${pts[1][1]}`;
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i-1)]; const p1 = pts[i]; const p2 = pts[i+1]; const p3 = pts[Math.min(pts.length-1, i+2)];
+    const cp1x = p1[0] + (p2[0]-p0[0])/6; const cp1y = p1[1] + (p2[1]-p0[1])/6; const cp2x = p2[0] - (p3[0]-p1[0])/6; const cp2y = p2[1] - (p3[1]-p1[1])/6;
+    d += ` C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`;
+  } return d;
+}
+
+function startDraw(mode) {
+  drawMode = mode; drawWaypoints = []; drawSvgPts = [];
+  document.getElementById('draw-toolbar').style.display = 'flex';
+  if (mode === 'river') { document.getElementById('draw-mode-indicator').innerHTML = '🌊 River Mode'; document.getElementById('draw-river-btn').style.background = '#c62828'; document.getElementById('draw-river-btn').textContent = '🚫 Drawing...'; document.getElementById('draw-soil-btn').style.opacity = '0.5'; } 
+  else if (mode === 'soil') { document.getElementById('draw-mode-indicator').innerHTML = '🟫 Soil Mode'; document.getElementById('draw-soil-btn').style.background = '#c62828'; document.getElementById('draw-soil-btn').textContent = '🚫 Drawing...'; document.getElementById('draw-river-btn').style.opacity = '0.5'; }
+  svg.style.cursor = 'crosshair'; hideTip(); drawPreviewG = el('g', {id:'draw-preview'}); svg.appendChild(drawPreviewG);
+}
+
+function updateDrawPreview() {
+  if (!drawPreviewG) return; drawPreviewG.innerHTML = ''; if (drawSvgPts.length === 0) return;
+  drawSvgPts.forEach((p, i) => { drawPreviewG.appendChild(el('circle', {cx:p[0], cy:p[1], r:'5', fill: i===0 ? '#4caf50' : (drawMode==='river'?'#1565c0':'#c8a46e'), stroke:'white', 'stroke-width':'1.5', 'pointer-events':'none'})); });
+  if (drawSvgPts.length >= 2) {
+    if(drawMode === 'river') {
+        const d = catmullRomPath(drawSvgPts);
+        drawPreviewG.insertBefore(el('path', {d, fill:'none', stroke:'#1565c0', 'stroke-width':'2.5', 'stroke-dasharray':'6 3', 'stroke-linecap':'round', 'stroke-linejoin':'round', 'pointer-events':'none'}), drawPreviewG.firstChild);
+        drawPreviewG.insertBefore(el('path', {d, fill:'none', stroke:'white', 'stroke-width':'4', 'stroke-linecap':'round', 'stroke-linejoin':'round', 'pointer-events':'none', opacity:'0.7'}), drawPreviewG.firstChild);
+    } else if (drawMode === 'soil') {
+        drawPreviewG.insertBefore(el('polygon', {points: drawSvgPts.map(p => p.join(',')).join(' '), fill:'#c8a46e', 'fill-opacity':'0.5', stroke:'#8b7355', 'stroke-width':'2', 'stroke-dasharray':'5 5'}), drawPreviewG.firstChild);
+    }
+  } document.getElementById('draw-pt-count').textContent = drawSvgPts.length + ' pts';
+}
+function undoDrawPoint() { drawWaypoints.pop(); drawSvgPts.pop(); updateDrawPreview(); }
+function finishDraw() {
+  if (drawMode === 'river' && drawWaypoints.length < 2) { alert('Rivers need at least 2 points.'); return; }
+  if (drawMode === 'soil' && drawWaypoints.length < 3) { alert('Soil regions need at least 3 points to form an area.'); return; }
+  const savedWaypoints = [...drawWaypoints]; const cat = drawMode === 'river' ? 'River' : 'Soil';
+  cancelDraw(); openAddModal(savedWaypoints[0][1], savedWaypoints[0][0], "", cat); window._pendingWaypoints = savedWaypoints;
+}
+function cancelDraw() {
+  drawMode = 'none'; drawWaypoints = []; drawSvgPts = [];
+  if (drawPreviewG) { drawPreviewG.remove(); drawPreviewG = null; }
+  document.getElementById('draw-toolbar').style.display = 'none';
+  document.getElementById('draw-river-btn').style.background = 'linear-gradient(135deg,#1565c0,#1976d2)'; document.getElementById('draw-river-btn').textContent = '🌊 Draw River'; document.getElementById('draw-river-btn').style.opacity = '1';
+  document.getElementById('draw-soil-btn').style.background = 'linear-gradient(135deg,#a16207,#d97706)'; document.getElementById('draw-soil-btn').textContent = '🟫 Draw Soil'; document.getElementById('draw-soil-btn').style.opacity = '1';
+  svg.style.cursor = 'crosshair';
+}
+function getSvgPoint(e) { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+
+svg.addEventListener('dblclick', function(e) {
+  if (drawMode !== 'none') { e.stopPropagation(); e.preventDefault(); if (drawWaypoints.length > 0) { drawWaypoints.pop(); drawSvgPts.pop(); } finishDraw(); }
+});
+svg.addEventListener('click', function(e) {
+  if (drawMode !== 'none') {
+    e.stopPropagation(); const svgP = getSvgPoint(e); const [lng, lat] = unproj(svgP.x, svgP.y);
+    drawWaypoints.push([lng, lat]); drawSvgPts.push([svgP.x, svgP.y]); updateDrawPreview(); return;
+  }
+  if(quizMode === 'identify') return; 
+  
+  if(e.target.tagName !== 'svg' && e.target.tagName !== 'g' && e.target.tagName !== 'polygon' && e.target.tagName !== 'path') { hideTip(); return; }
+  hideTip(); const svgP = getSvgPoint(e); const [lng, lat] = unproj(svgP.x, svgP.y);
+  if(activeTab === 'explore') openAddModal(lat, lng, "");
+});
+
+// ─── RENDERING MAP ───────────────────────────────────────────────────────────
+function renderMap(){
+  while (svg.lastChild) { svg.removeChild(svg.lastChild); }
+  const frag = document.createDocumentFragment(); const defs = el('defs'); frag.appendChild(defs);
+
+  const hideLabels = (activeTab === 'quiz');
+
+  // Background State Boundaries
+  const gSt=el('g'); STATES.forEach(s=>{
+    gSt.appendChild(el('polygon',{points: s.pts.map(c=>proj(c[0],c[1]).join(',')).join(' '), fill: s.coastal ? '#b8d4f0' : '#c8e6c9', stroke:'#6e8fa8', 'stroke-width':'0.8', opacity:'0.85', 'pointer-events':'none'}));
+  }); frag.appendChild(gSt);
+
+  const drawObj = (category, renderFn) => {
+    if(appliedCategories.size > 0 && !appliedCategories.has(category)) return;
+    const g = el('g');
+    places.filter(p => p.category === category).forEach(p => {
+        if(appliedStates.size > 0) {
+            let pStatesStr = p.states || p.state || ''; let pStatesArr = pStatesStr.split(',').map(s=>s.trim().toLowerCase());
+            let hasMatch = [...appliedStates].some(applied => pStatesArr.some(ps => ps.includes(applied.toLowerCase()) || applied.toLowerCase().includes(ps)));
+            if(!hasMatch) return; 
+        }
+        renderFn(g, p);
+    });
+    frag.appendChild(g);
+  };
+
+  drawObj('Soil', (g, s) => {
+    if(s.waypoints && s.waypoints.length >= 3) {
+      const poly = el('polygon', { points: s.waypoints.map(wp => proj(wp[0], wp[1]).join(',')).join(' '), fill: s.color || '#c8a46e', 'fill-opacity': s.opacity || '0.5', stroke: s.color || '#c8a46e', 'stroke-width': 1.5, 'stroke-linejoin':'round', cursor: 'pointer', 'pointer-events': 'fill' });
+      if(!hideLabels) poly.appendChild(el('title', {}, [document.createTextNode(`${s.name} (${s.type || 'Soil'})`)]));
+      addFeatureClick(poly, s); g.appendChild(poly);
+    }
+  });
+
+  drawObj('River', (g, r) => {
+    if(r.waypoints && r.waypoints.length >= 2) {
+      const pts = r.waypoints.map(wp => proj(wp[0], wp[1]));
+      const dPath = catmullRomPath(pts); const pathId = 'river-path-' + r.id;
+      defs.appendChild(el('path', {id: pathId, d: dPath, fill: 'none'}));
+
+      const weight = r.weight || 2.5; const color = r.color || '#1565c0';
+      const line = el('path', {id: 'feature-'+r.id, d: dPath, fill: 'none', stroke: color, 'stroke-width': weight, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', cursor: 'pointer', 'pointer-events': 'stroke'});
+      
+      if(!hideLabels) {
+          const fontSize = Math.min(13, parseInt(weight) + 8);
+          const halo = el('text', {'font-size':fontSize,'font-weight':'700','fill':'white','stroke':'white','stroke-width':(parseInt(weight)+1),'stroke-linejoin':'round','paint-order':'stroke fill','pointer-events':'none', dy:-5});
+          const tpH = document.createElementNS(SVG_NS,'textPath'); tpH.setAttribute('href','#'+pathId); tpH.setAttribute('startOffset','40%'); tpH.setAttribute('text-anchor','middle');
+          tpH.textContent = r.name; halo.appendChild(tpH); g.appendChild(halo);
+
+          const txt = el('text', { 'font-size': fontSize, 'font-weight': '700', fill: color, 'pointer-events': 'none', dy: -5 });
+          const tp = document.createElementNS(SVG_NS, 'textPath'); tp.setAttribute('href', '#' + pathId); tp.setAttribute('startOffset', '40%'); tp.setAttribute('text-anchor', 'middle');
+          tp.textContent = r.name; txt.appendChild(tp); 
+
+          line.appendChild(el('title', {}, [document.createTextNode(r.name)]));
+          g.appendChild(txt);
+      }
+      addFeatureClick(line, r); g.appendChild(line); 
+    } else {
+        const [x,y] = proj(r.lng, r.lat); const c = el('circle',{id: 'feature-'+r.id, cx:x, cy:y, r:4, fill:(r.color || '#1565c0'), stroke:'#fff', 'stroke-width':'1', cursor:'pointer'});
+        if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(r.name)]));
+        addFeatureClick(c, r); g.appendChild(c);
+    }
+  });
+
+  drawObj('Mountain', (g, m) => {
+    const [x,y] = proj(m.lng, m.lat);
+    const tri = el('polygon',{id: 'feature-'+m.id, points:`${x},${y-12} ${x-9},${y+6} ${x+9},${y+6}`, fill:'#8b7355', stroke:'#5c3d1a', 'stroke-width':'1', cursor:'pointer'});
+    if(!hideLabels) {
+        const txt = el('text',{x, y:y+17, 'font-size':'8.5', 'font-weight':'600', fill:'#5c3d1a', 'text-anchor':'middle', 'pointer-events':'none'}); txt.textContent = m.name;
+        tri.appendChild(el('title', {}, [document.createTextNode(m.name)]));
+        g.appendChild(txt);
+    }
+    addFeatureClick(tri, m); g.appendChild(tri); 
+  });
+
+  drawObj('Peak', (g, pk) => {
+    const [x,y] = proj(pk.lng, pk.lat);
+    const tri = el('polygon',{id: 'feature-'+pk.id, points:`${x},${y-7} ${x-5},${y+4} ${x+5},${y+4}`, fill:'#4a2c18', stroke:'#fff', 'stroke-width':'0.5', cursor:'pointer'});
+    if(!hideLabels) tri.appendChild(el('title', {}, [document.createTextNode(pk.name)]));
+    addFeatureClick(tri, pk); g.appendChild(tri);
+  });
+
+  drawObj('Wetland', (g, w) => {
+    const [x,y]=proj(w.lng,w.lat); const c=el('circle',{id: 'feature-'+w.id, cx:x,cy:y,r:6, fill:'#4caf7d', stroke:'#1b5e20', 'stroke-width':'1', cursor:'pointer'});
+    if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(w.name)])); 
+    addFeatureClick(c, w); g.appendChild(c);
+  });
+
+  drawObj('Lake', (g, l) => {
+    const [x,y]=proj(l.lng,l.lat); const c=el('ellipse',{id: 'feature-'+l.id, cx:x,cy:y,rx:5,ry:3.5, fill:'#4a90d9', stroke:'#1565c0', 'stroke-width':'1', cursor:'pointer'});
+    if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(l.name)])); 
+    addFeatureClick(c, l); g.appendChild(c);
+  });
+
+  drawObj('National Park', (g, n) => {
+    const [x,y]=proj(n.lng,n.lat); const c=el('rect',{id: 'feature-'+n.id, x:x-4,y:y-4,width:8,height:8, fill:'#2e7d32', stroke:'#a5d6a7', 'stroke-width':'1', transform:`rotate(45,${x},${y})`, cursor:'pointer'});
+    if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(n.name)])); 
+    addFeatureClick(c, n); g.appendChild(c);
+  });
+
+  drawObj('Wildlife Sanctuary', (g, w) => {
+    const [x,y]=proj(w.lng,w.lat); const c=el('polygon',{id: 'feature-'+w.id, points:`${x},${y-6} ${x+5.2},${y+3} ${x-5.2},${y+3}`, fill:'#7cb342', stroke:'#33691e', 'stroke-width':'1', cursor:'pointer'});
+    if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(w.name)])); 
+    addFeatureClick(c, w); g.appendChild(c);
+  });
+
+  drawObj('Dam', (g, d) => {
+    const [x,y]=proj(d.lng,d.lat); const r=el('rect',{id: 'feature-'+d.id, x:x-5,y:y-3,width:10,height:6, fill:'#546e7a', stroke:'#cfd8dc', 'stroke-width':'1', cursor:'pointer'});
+    if(!hideLabels) r.appendChild(el('title', {}, [document.createTextNode(d.name)])); 
+    addFeatureClick(r, d); g.appendChild(r);
+  });
+
+  drawObj('City', (g, c) => {
+    const [x,y]=proj(c.lng,c.lat); const fill = c.type==='Capital city'?'#880e4f': c.type==='Port city'?'#1565c0':'#4a148c'; const rad = c.type==='Capital city'?5.5: 4.5;
+    const circ=el('circle',{id: 'feature-'+c.id, cx:x,cy:y,r:rad,fill,stroke:'#fff','stroke-width':'1',cursor:'pointer'});
+    if(!hideLabels) {
+        const txt=el('text',{x,y:y-7,'font-size':'9','font-weight':'600',fill:'#1a1a1a','text-anchor':'middle','pointer-events':'none'}); txt.textContent=c.name;
+        circ.appendChild(el('title', {}, [document.createTextNode(c.name)]));
+        g.appendChild(txt);
+    }
+    addFeatureClick(circ, c); g.appendChild(circ); 
+  });
+
+  // TIGER RESERVE OVERLAY LAYER
+  if(appliedCategories.size === 0 || appliedCategories.has('Tiger Reserve')) {
+      const gTR = el('g');
+      places.filter(p => p.tigerReserve && p.tigerReserve.trim() !== '').forEach(p => {
+          if(appliedStates.size > 0) {
+              let pStatesStr = p.states || p.state || ''; let pStatesArr = pStatesStr.split(',').map(s=>s.trim().toLowerCase());
+              let hasMatch = [...appliedStates].some(applied => pStatesArr.some(ps => ps.includes(applied.toLowerCase()) || applied.toLowerCase().includes(ps)));
+              if(!hasMatch) return; 
+          }
+          const [x,y]=proj(p.lng, p.lat); 
+          const c=el('circle',{id: 'feature-tr-'+p.id, cx:x, cy:y, r:8, fill:'none', stroke:'#e65100', 'stroke-width':'2.5', cursor:'pointer'});
+          if(!hideLabels) c.appendChild(el('title', {}, [document.createTextNode(p.tigerReserve + ' (Tiger Reserve)')]));
+          addFeatureClick(c, p); gTR.appendChild(c);
+      });
+      frag.appendChild(gTR);
+  }
+
+  svg.appendChild(frag);
+  if(drawMode !== 'none' && drawPreviewG) svg.appendChild(drawPreviewG);
+}
+
+function addFeatureClick(elem, item){ 
+    elem.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        if(quizMode === 'identify') {
+            submitIdentifyMap(item.id, elem);
+        } else {
+            showTip(e, item); 
+        }
+    }); 
+}
+
+function showTip(e, item){
+  if (drawMode !== 'none' || quizMode !== 'none') return;
+  const tipCont = document.getElementById('tip-content');
+  let relHtml = '';
+  if(item.type) relHtml += `<strong>Type:</strong> ${item.type}<br>`; if(item.states || item.state) relHtml += `<strong>State(s):</strong> ${item.states || item.state}<br>`;
+  if(item.rivers || item.river) relHtml += `<strong>River(s):</strong> ${item.rivers || item.river}<br>`; if(item.elev) relHtml += `<strong>Elev:</strong> ${item.elev}m<br>`;
+  if(item.range) relHtml += `<strong>Range:</strong> ${item.range}<br>`; if(item.origin) relHtml += `<strong>Origin:</strong> ${item.origin}<br>`;
+  if(item.mouth) relHtml += `<strong>Mouth:</strong> ${item.mouth}<br>`; if(item.tributaries) relHtml += `<strong>Tributaries:</strong> ${item.tributaries}<br>`;
+  if(item.tigerReserve) relHtml += `<strong>Tiger Res:</strong> ${item.tigerReserve}<br>`;
+  
+  tipCont.innerHTML = `<h3 style="margin:0 0 5px; color:var(--color-primary); font-size:14px;">${item.name}</h3><span style="font-size:10px; color:#64748b; text-transform:uppercase;">${item.category}</span><div style="margin-top:8px; padding-top:8px; border-top:1px solid #e2e8f0; line-height:1.5;">${relHtml}</div><p style="margin:8px 0 0; color:#475569; font-style:italic;">${item.desc || ''}</p><div style="display:flex; gap:6px; margin-top:12px;"><button onclick="openEdit(${item.id})" style="flex:1; padding:6px; background:var(--color-warning); border:none; border-radius:4px; color:#fff; cursor:pointer; font-weight:bold;">Edit</button><button onclick="deletePlace(${item.id})" style="flex:1; padding:6px; background:var(--color-danger); border:none; border-radius:4px; color:#fff; cursor:pointer; font-weight:bold;">Delete</button></div>`;
+  
+  tip.style.display='block';
+  const rect = document.getElementById('map-area').getBoundingClientRect();
+  let x = e.clientX - rect.left + 15; let y = e.clientY - rect.top + 15;
+  if(x + 250 > rect.width) x = e.clientX - rect.left - 265;
+  if(y + tip.offsetHeight > rect.height) y = e.clientY - rect.top - tip.offsetHeight - 15;
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+function hideTip(){ tip.style.display='none'; }
+
+
+// ─── MODAL FORM & SAVE ───────────────────────────────────────────────────────
+function updateDynamicFields() {
+  const cat = document.getElementById('place-category').value; const cont = document.getElementById('dynamic-fields-container'); cont.innerHTML = '';
+  if (cat === 'Select') { cont.style.display = 'none'; return; } cont.style.display = 'block';
+  let html = '';
+  switch(cat) {
+    case 'River': html = `<div class="form-group" style="display:flex; gap:10px;"><div style="flex:1"><label>Color</label><input type="color" id="dyn-color" value="#1565c0" style="padding:2px; height:38px;"></div><div style="flex:1"><label>Thickness (1-15)</label><input type="number" id="dyn-weight" min="1" max="15" value="3"></div></div><div class="form-group"><label>Type</label><input type="text" id="dyn-type" placeholder="Main River or Tributary"></div><div class="form-group"><label>Origin</label><input type="text" id="dyn-origin"></div><div class="form-group"><label>Mouth</label><input type="text" id="dyn-mouth"></div><div class="form-group"><label>Tributaries</label><input type="text" id="dyn-tribs"></div><div class="form-group"><label>States (comma separated)</label><input type="text" id="dyn-states"></div>`; break;
+    case 'Soil': html = `<div class="form-group" style="display:flex; gap:10px;"><div style="flex:1"><label>Color</label><input type="color" id="dyn-color" value="#fde047" style="padding:2px; height:38px;"></div><div style="flex:1"><label>Opacity (0.1 to 1.0)</label><input type="number" id="dyn-opacity" min="0.1" max="1.0" step="0.1" value="0.5"></div></div><div class="form-group"><label>Soil Type</label><input type="text" id="dyn-type" placeholder="e.g. Alluvial, Black (Regur)"></div><div class="form-group"><label>States / Regions</label><input type="text" id="dyn-states"></div>`; break;
+    case 'Mountain': html = `<div class="form-group"><label>Type</label><input type="text" id="dyn-type" placeholder="e.g. Fold, Fault"></div><div class="form-group"><label>States (comma separated)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Rivers Originating</label><input type="text" id="dyn-rivers"></div>`; break;
+    case 'Peak': html = `<div class="form-group"><label>Elevation (m)</label><input type="text" id="dyn-elev"></div><div class="form-group"><label>Range</label><input type="text" id="dyn-range"></div><div class="form-group"><label>States (comma separated)</label><input type="text" id="dyn-states"></div>`; break;
+    case 'Lake': case 'Wetland': html = `<div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Water Type</label><select id="dyn-type"><option value="Freshwater">Freshwater</option><option value="Saltwater">Saltwater / Brackish</option></select></div><div class="form-group"><label>Origin Type</label><select id="dyn-origin"><option value="Natural">Natural</option><option value="Manmade">Manmade / Artificial</option></select></div>`; break;
+    case 'National Park': case 'Wildlife Sanctuary': html = `<div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Rivers / Mountains inside</label><input type="text" id="dyn-rivers"></div><div class="form-group"><label>Tiger Reserve Status</label><input type="text" id="dyn-tr" placeholder="Leave blank if none"></div><div class="form-group"><label>Famous Species</label><input type="text" id="dyn-type" placeholder="e.g. One-horned Rhino"></div>`; break;
+    case 'Dam': html = `<div class="form-group"><label>River</label><input type="text" id="dyn-rivers"></div><div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div>`; break;
+    case 'City': html = `<div class="form-group"><label>Type</label><select id="dyn-type"><option value="Important city">Important</option><option value="Capital city">Capital</option><option value="Port city">Port</option></select></div>`; break;
+  }
+  cont.innerHTML = html;
+}
+
+function openAddModal(lat, lng, defaultName, forceCategory=null) { 
+    document.getElementById('modal-title').innerText = 'Add Feature'; document.getElementById('place-id').value = ''; document.getElementById('place-lat').value = lat; document.getElementById('place-lng').value = lng; document.getElementById('place-name').value = defaultName || ''; document.getElementById('place-category').value = forceCategory || 'Select'; document.getElementById('place-desc').value = ''; 
+    updateDynamicFields(); document.getElementById('modal-overlay').style.display = 'flex'; 
+}
+function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+function getDynVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : null; }
+
+function savePlace() {
+  const id = document.getElementById('place-id').value; const name = document.getElementById('place-name').value.trim(); const category = document.getElementById('place-category').value; 
+  if(!name || category === 'Select') return alert("Name and Category required.");
+  
+  const newP = { 
+      id: id ? parseInt(id) : Date.now(), lat: parseFloat(document.getElementById('place-lat').value), lng: parseFloat(document.getElementById('place-lng').value), name, category, desc: document.getElementById('place-desc').value.trim(),
+      type: getDynVal('dyn-type'), states: getDynVal('dyn-states') || getDynVal('dyn-state'), state: getDynVal('dyn-states') || getDynVal('dyn-state'), rivers: getDynVal('dyn-rivers'), river: getDynVal('dyn-rivers'),
+      elev: getDynVal('dyn-elev'), range: getDynVal('dyn-range'), origin: getDynVal('dyn-origin'), mouth: getDynVal('dyn-mouth'), tributaries: getDynVal('dyn-tribs'), tigerReserve: getDynVal('dyn-tr'),
+      color: getDynVal('dyn-color'), weight: getDynVal('dyn-weight'), opacity: getDynVal('dyn-opacity')
+  };
+  
+  if(id) { 
+      const existing = places.find(p => p.id == id); 
+      if(existing && existing.waypoints) newP.waypoints = existing.waypoints; 
+  } else if(window._pendingWaypoints && window._pendingWaypoints.length) {
+      newP.waypoints = window._pendingWaypoints; newP.lat = newP.waypoints[0][1]; newP.lng = newP.waypoints[0][0]; window._pendingWaypoints = null;
+  }
+  
+  Object.keys(newP).forEach(k => { if (!newP[k]) delete newP[k]; });
+  if(id) places = places.map(p => p.id == id ? newP : p); else places.push(newP);
+  localStorage.setItem('upsc_atlas_final', JSON.stringify(places)); 
+  clearFilters(); closeModal(); 
+}
+
+function openEdit(id) {
+  const p = places.find(x => x.id === id); if(!p) return;
+  document.getElementById('modal-title').innerText = 'Edit Feature'; document.getElementById('place-id').value = p.id; document.getElementById('place-lat').value = p.lat; document.getElementById('place-lng').value = p.lng; document.getElementById('place-name').value = p.name; document.getElementById('place-category').value = p.category; document.getElementById('place-desc').value = p.desc || '';
+  updateDynamicFields();
+  const setDynVal = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  setDynVal('dyn-type', p.type); setDynVal('dyn-states', p.states || p.state); setDynVal('dyn-rivers', p.rivers || p.river);
+  setDynVal('dyn-elev', p.elev); setDynVal('dyn-range', p.range); setDynVal('dyn-origin', p.origin); setDynVal('dyn-mouth', p.mouth);
+  setDynVal('dyn-tribs', p.tributaries); setDynVal('dyn-tr', p.tigerReserve);
+  if(p.category === 'River') { setDynVal('dyn-color', p.color || '#1565c0'); setDynVal('dyn-weight', p.weight || '3'); }
+  if(p.category === 'Soil') { setDynVal('dyn-color', p.color || '#c8a46e'); setDynVal('dyn-opacity', p.opacity || '0.5'); }
+  hideTip(); document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function deletePlace(id) { if(confirm("Delete this feature?")) { places = places.filter(p => p.id !== id); localStorage.setItem('upsc_atlas_final', JSON.stringify(places)); hideTip(); renderMap(); } }
+
+function buildLegend(){
+  const bar = document.getElementById('legend'); bar.innerHTML = '';
+  const add = (color, label, shape='circle') => {
+    const d=document.createElement('div'); d.className='leg-item'; const s=document.createElement('span');
+    if(shape==='line') s.style.cssText=`width:16px;height:3px;background:${color};display:inline-block;border-radius:2px;`;
+    else if(shape==='square') s.style.cssText=`width:10px;height:8px;background:${color};display:inline-block;`;
+    else if(shape==='tri') s.style.cssText=`width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid ${color};display:inline-block;`;
+    else if(shape==='ring') s.style.cssText=`width:10px;height:10px;border-radius:50%;border:2px solid ${color};display:inline-block;flex-shrink:0;box-sizing:border-box;`;
+    else s.style.cssText=`width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;`;
+    d.append(s,document.createTextNode(' '+label)); bar.appendChild(d);
+  };
+  
+  // Conditionally render the legend based on the active tab
+  if (activeTab === 'explore') {
+      add('#b8d4f0','Coastal state', 'square'); add('#c8e6c9','Landlocked state', 'square'); add('#c8a46e','Soil Region', 'square');
+  }
+  
+  add('#8b7355','Mountain range', 'tri'); add('#4a2c18','Peak', 'tri'); add('#1565c0','River', 'line');
+  add('#4a90d9','Lake'); add('#4caf7d','Wetland'); add('#2e7d32','National park', 'square');
+  add('#7cb342','Wildlife sanctuary', 'tri'); add('#e65100','Tiger Reserve', 'ring'); add('#546e7a','Dam', 'square'); add('#880e4f','City');
+}
+
+
+// ─── QUIZ ENGINE ─────────────────────────────────────────────────────────────
+let quizMode = 'none'; // 'mcq', 'identify', 'fill', 'arrange', 'none'
+let quizPool = []; let qIndex = 0; let score = 0; 
+let currentCorrectAnswer = null; let arrangeQueue = [];
+
+function getDistractors(correctValue, typeString) {
+    let pool = new Set();
+    places.forEach(p => { 
+        if(p.category !== 'Soil') {
+            if(typeString === 'states_multi' && (p.states || p.state)) pool.add(p.states || p.state);
+            else if (p[typeString]) pool.add(p[typeString]); 
+        }
+    });
+    pool.delete(correctValue);
+    
+    if(pool.size < 3) {
+        if(typeString === 'states_multi') {
+            pool.add("Maharashtra, Karnataka, Telangana"); pool.add("Uttarakhand, Himachal Pradesh"); pool.add("Arunachal Pradesh, Assam"); pool.add("Kerala, Tamil Nadu");
+        }
+        else if(typeString === 'river' || typeString === 'rivers') { ['Ganga','Yamuna','Godavari','Krishna','Narmada'].forEach(r=>pool.add(r)); }
+        else if(typeString === 'origin') { ['Himalayas','Western Ghats','Aravalli','Satpura'].forEach(o=>pool.add(o)); }
+        pool.delete(correctValue);
+    }
+    return Array.from(pool).sort(() => 0.5 - Math.random()).slice(0, 3);
+}
+
+function startQuiz(mode) {
+    if(drawMode !== 'none') cancelDraw(); hideTip(); quizMode = mode;
+    
+    let validPlaces = places.filter(p => p.category !== 'Soil');
+
+    if(quizAppliedCategories.size > 0) validPlaces = validPlaces.filter(p => quizAppliedCategories.has(p.category));
+    if(quizAppliedStates.size > 0) {
+        validPlaces = validPlaces.filter(p => {
+            let pStatesStr = p.states || p.state || ''; let pStatesArr = pStatesStr.split(',').map(s=>s.trim().toLowerCase());
+            return [...quizAppliedStates].some(applied => pStatesArr.some(ps => ps.includes(applied.toLowerCase()) || applied.toLowerCase().includes(ps)));
+        });
+    }
+
+    if(mode === 'arrange') {
+        validPlaces = validPlaces.filter(p => p.lat && p.lng);
+        if(validPlaces.length < 4) return alert("Not enough valid locations! You need at least 4 saved locations matching your filters to play Arrange mode.");
+    } else {
+        if(validPlaces.length < 4) return alert("Not enough valid locations! Save more features or broaden your quiz filters.");
+    }
+
+    quizPool = validPlaces.sort(() => 0.5 - Math.random()).slice(0, quizQuestionCount); 
+    qIndex = 0; score = 0;
+    
+    document.getElementById('quiz-start-screen').style.display = 'none';
+    document.getElementById('quiz-active-screen').style.display = 'flex';
+    
+    activeCategories.clear(); activeStates.clear(); appliedCategories.clear(); appliedStates.clear();
+    renderMap();
+    loadQuestion();
+}
+
+function cancelQuiz() {
+    quizMode = 'none';
+    document.getElementById('quiz-start-screen').style.display = 'block';
+    document.getElementById('quiz-active-screen').style.display = 'none';
+    const highlighted = document.querySelectorAll('.identify-pulse');
+    highlighted.forEach(el => el.classList.remove('identify-pulse'));
+    renderMap(); 
+}
+
+function loadQuestion() {
+    document.getElementById('quiz-next-btn').style.display = 'none'; 
+    document.getElementById('quiz-feedback').style.display = 'none';
+    
+    if(qIndex >= quizPool.length) {
+        document.getElementById('quiz-active-screen').innerHTML = `
+            <h2 style="text-align:center; color:var(--color-primary);">Quiz Complete!</h2>
+            <h1 style="text-align:center; font-size:40px; margin:10px 0;">${score}/${quizPool.length}</h1>
+            <p style="text-align:center; color:var(--color-subtext);">Great job reviewing your map.</p>
+            <button class="quiz-submit-btn" style="margin-top:20px;" onclick="cancelQuiz(); document.getElementById('quiz-active-screen').innerHTML=window.activeScreenHTML;">Back to Menu</button>
+        `;
+        if(!window.activeScreenHTML) window.activeScreenHTML = document.getElementById('quiz-active-screen').innerHTML;
+        return;
+    }
+
+    const p = quizPool[qIndex];
+    document.getElementById('quiz-progress').innerText = `Q ${qIndex + 1}/${quizPool.length}`; 
+    document.getElementById('quiz-score').innerText = `Score: ${score}`;
+    
+    const qText = document.getElementById('quiz-q-text'); 
+    const optContainer = document.getElementById('quiz-interactive-area'); 
+    optContainer.innerHTML = '';
+    
+    let options = []; currentCorrectAnswer = '';
+
+    if (quizMode === 'mcq') {
+        let qType = '';
+        if (p.category === 'River') {
+            const rand = Math.random();
+            if(rand < 0.33 && p.origin) { qText.innerText = `Where does the river '${p.name}' originate from?`; currentCorrectAnswer = p.origin; qType='origin'; }
+            else if (rand < 0.66 && p.tributaries) { qText.innerText = `Which of these is a tributary of the '${p.name}' river?`; currentCorrectAnswer = p.tributaries.split(',')[0].trim(); qType='tributaries'; }
+            else { qText.innerText = `Which states/UTs does the river '${p.name}' flow through?`; currentCorrectAnswer = p.states || p.state; qType='states_multi'; }
+        } 
+        else if (['Mountain', 'Peak'].includes(p.category)) {
+            qText.innerText = `In which state(s)/UT(s) is the ${p.category} '${p.name}' located?`;
+            currentCorrectAnswer = p.states || p.state; qType='states_multi';
+        }
+        else if (['National Park', 'Wildlife Sanctuary', 'Tiger Reserve'].includes(p.category)) {
+            const rand = Math.random();
+            if(rand < 0.5 && p.type) { qText.innerText = `Which famous species is protected in '${p.name}'?`; currentCorrectAnswer = p.type; qType='type'; }
+            else { qText.innerText = `Where is the protected area '${p.name}' located?`; currentCorrectAnswer = p.states || p.state; qType='states_multi'; }
+        }
+        else if (p.category === 'Dam') {
+            qText.innerText = `On which river is the '${p.name}' dam built?`;
+            currentCorrectAnswer = p.rivers || p.river; qType='rivers';
+        }
+        else if (['Lake', 'Wetland'].includes(p.category)) {
+            qText.innerText = `Is the ${p.category} '${p.name}' freshwater or saltwater?`;
+            currentCorrectAnswer = p.type || "Freshwater"; options = ["Freshwater", "Saltwater / Brackish"];
+        }
+
+        if(!currentCorrectAnswer) {
+            qText.innerText = `Which category does '${p.name}' belong to?`;
+            currentCorrectAnswer = p.category; options = ['Mountain', 'River', 'National Park', 'Lake'];
+        }
+
+        if(options.length === 0) {
+            let distractors = getDistractors(currentCorrectAnswer, qType);
+            options = [currentCorrectAnswer, ...distractors].sort(() => 0.5 - Math.random());
+        }
+
+        const div = document.createElement('div'); div.className = 'quiz-options';
+        options.forEach(opt => { 
+            const btn = document.createElement('button'); btn.className = 'quiz-opt-btn'; btn.innerText = opt; 
+            btn.onclick = () => submitMCQ(btn, opt); div.appendChild(btn); 
+        });
+        optContainer.appendChild(div); 
+    } 
+    else if (quizMode === 'fill') {
+        let hint = "";
+        if (p.category === 'River') { qText.innerText = `Name ALL the states that the river '${p.name}' flows through (comma separated):`; currentCorrectAnswer = p.states || p.state || 'Unknown'; hint = "e.g., Uttarakhand, UP, Bihar"; }
+        else if (p.category === 'Dam') { qText.innerText = `Name the river on which the '${p.name}' dam is built:`; currentCorrectAnswer = p.rivers || p.river || 'Unknown'; hint = "River name"; }
+        else { qText.innerText = `Name ALL the state(s)/UT(s) where '${p.name}' (${p.category}) is located:`; currentCorrectAnswer = p.states || p.state || "Unknown"; hint = "e.g., Kerala, Tamil Nadu"; }
+
+        optContainer.innerHTML = `<input type="text" id="quiz-text-input" class="quiz-text-input" placeholder="${hint}"><button class="quiz-submit-btn" onclick="submitFill()">Submit</button>`;
+    }
+    else if (quizMode === 'identify') {
+        qText.innerText = `Find and click on: ${p.name} (${p.category})`;
+        currentCorrectAnswer = p.id;
+        optContainer.innerHTML = `<p style="font-size:12px; color:var(--color-subtext); text-align:center; background:#f1f5f9; padding:10px; border-radius:6px;">Explore the map and click on the correct feature.</p>`;
+    }
+    else if (quizMode === 'arrange') {
+        let arrangeSet = places.filter(x => x.category === p.category && x.lat && x.lng).sort(() => 0.5 - Math.random()).slice(0, 4);
+        if(arrangeSet.length < 4) arrangeSet = places.filter(x => x.lat && x.lng && x.category !== 'Soil').sort(() => 0.5 - Math.random()).slice(0, 4);
+        
+        const modeNS = Math.random() > 0.5;
+        qText.innerText = modeNS ? `Arrange these places from NORTH to SOUTH:` : `Arrange these places from WEST to EAST:`;
+        
+        let sorted = [...arrangeSet].sort((a,b) => modeNS ? b.lat - a.lat : a.lng - b.lng); 
+        currentCorrectAnswer = sorted.map(x => x.id).join(','); 
+        arrangeQueue = [];
+
+        const targetDiv = document.createElement('div'); targetDiv.className = 'arrange-target'; targetDiv.id = 'arrange-target'; 
+        targetDiv.innerHTML = '<span style="color:#94a3b8; font-size:11px; text-align:center; padding:10px 0;">Tap items below in order...</span>';
+        
+        const sourceDiv = document.createElement('div'); sourceDiv.className = 'arrange-container';
+        
+        arrangeSet.sort(() => 0.5 - Math.random()).forEach(item => {
+            const btn = document.createElement('div'); btn.className = 'arrange-item'; btn.innerText = item.name + ` (${item.category})`;
+            btn.onclick = () => {
+                if(arrangeQueue.length === 0) targetDiv.innerHTML = '';
+                arrangeQueue.push(item.id); btn.style.display = 'none'; 
+                const clone = document.createElement('div'); clone.className = 'arrange-item'; clone.innerText = item.name; targetDiv.appendChild(clone);
+                if(arrangeQueue.length === arrangeSet.length) submitArrange();
+            };
+            sourceDiv.appendChild(btn);
+        });
+        optContainer.appendChild(targetDiv); optContainer.appendChild(sourceDiv);
+    }
+}
+
+function showFeedback(isCorrect, rightAnswerText) {
+    const fb = document.getElementById('quiz-feedback'); fb.style.display = 'block';
+    if(isCorrect) { score++; fb.innerHTML = "✅ Correct!"; fb.style.color = "var(--color-success)"; fb.style.backgroundColor = "#dcfce7"; } 
+    else { fb.innerHTML = `❌ Incorrect.<br><span style="font-size:11px; font-weight:normal; color:#475569;">Answer: <strong>${rightAnswerText}</strong></span>`; fb.style.color = "var(--color-danger)"; fb.style.backgroundColor = "#fee2e2"; }
+    document.getElementById('quiz-score').innerText = `Score: ${score}`; document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function submitMCQ(btnClicked, selectedText) { 
+    const btns = document.getElementById('quiz-interactive-area').firstChild.children; 
+    for(let b of btns) { 
+        b.disabled = true; 
+        if(b.innerText === currentCorrectAnswer) b.classList.add('correct'); 
+    } 
+    if(selectedText !== currentCorrectAnswer) btnClicked.classList.add('wrong'); 
+    showFeedback(selectedText === currentCorrectAnswer, currentCorrectAnswer); 
+}
+
+function submitFill() { 
+    const input = document.getElementById('quiz-text-input'); input.disabled = true; 
+    const userAns = input.value.trim().toLowerCase(); 
+    if(!userAns) return showFeedback(false, currentCorrectAnswer);
+    
+    const correctArr = currentCorrectAnswer.toLowerCase().split(',').map(s=>s.trim()); 
+    let matches = 0;
+    
+    correctArr.forEach(c => {
+        const words = c.split(' ');
+        let acr = words.length > 1 ? words.map(w=>w[0]).join('') : c;
+        if(c === 'jammu and kashmir' || c === 'jammu & kashmir') acr = 'j&k';
+        if(c === 'arunachal pradesh') acr = 'ap';
+        if(c === 'himachal pradesh') acr = 'hp';
+        if(c === 'madhya pradesh') acr = 'mp';
+        if(c === 'uttar pradesh') acr = 'up';
+        if(c === 'west bengal') acr = 'wb';
+        if(c === 'tamil nadu') acr = 'tn';
+        
+        const regex = new RegExp(`\\b(${c}|${acr})\\b`, 'i');
+        if(regex.test(userAns)) matches++;
+    });
+    
+    const isCorrect = matches >= correctArr.length; 
+    showFeedback(isCorrect, currentCorrectAnswer); 
+}
+
+function submitIdentifyMap(clickedId, svgElement) {
+    if(quizMode !== 'identify') return;
+    const isCorrect = (clickedId == currentCorrectAnswer);
+    svgElement.classList.add('identify-pulse');
+    const correctPlace = places.find(p => p.id == currentCorrectAnswer);
+    showFeedback(isCorrect, `You were supposed to click: ${correctPlace.name}`);
+    if(!isCorrect) {
+        const correctSvgEl = document.getElementById('feature-' + currentCorrectAnswer);
+        if(correctSvgEl) correctSvgEl.classList.add('identify-pulse');
+    }
+}
+
+function submitArrange() { 
+    const userOrder = arrangeQueue.join(','); 
+    const correctIds = currentCorrectAnswer.split(','); 
+    const correctNames = correctIds.map(id => places.find(p => p.id == id).name).join(' ➔ '); 
+    showFeedback(userOrder === currentCorrectAnswer, correctNames); 
+}
+
+function nextQuestion() { 
+    const highlighted = document.querySelectorAll('.identify-pulse');
+    highlighted.forEach(el => el.classList.remove('identify-pulse'));
+    qIndex++; 
+    loadQuestion(); 
+}
+
+// INITIALIZE
+initFilters();
+initQuizFilters();
+renderMap();
+buildLegend();
+</script>
+
+
+</body></html>
