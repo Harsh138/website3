@@ -218,6 +218,8 @@
           <option value="Lake">Lake</option><option value="Wetland">Wetland</option>
           <option value="National Park">National Park</option><option value="Wildlife Sanctuary">Wildlife Sanctuary</option>
           <option value="Dam">Dam</option><option value="City">City</option>
+          <option value="Biosphere Reserve">Biosphere Reserve</option>
+          <option value="Mountain Pass">Mountain Pass</option>
         </select>
       </div>
       <div id="dynamic-fields-container"></div>
@@ -280,7 +282,25 @@ const SEED_DATA = [
   {id:102, category:'Mountain', name:'Western Ghats', lat:14.5, lng:74.5, type:'Fault-block', states:'Gujarat, Maharashtra, Goa, Karnataka, Kerala, Tamil Nadu'},
   {id:201, category:'Peak', name:'K2', lat:35.88, lng:76.51, elev:'8611', range:'Karakoram', states:'Ladakh'},
   {id:301, category:'National Park', name:'Jim Corbett NP', lat:29.53, lng:78.77, states:'Uttarakhand', tigerReserve:'Corbett Tiger Reserve'},
-  {id:401, category:'River', name:'Ganga', type:'Main River', origin:'Gangotri', mouth:'Bay of Bengal', states:'Uttarakhand, Uttar Pradesh, Bihar, West Bengal', tributaries:'Yamuna, Son, Kosi', waypoints:[[79,31], [80,29.5], [82,27], [84,25.5], [86,25], [88,24], [89,22.5]]}
+  {id:401, category:'River', name:'Ganga', type:'Main River', origin:'Gangotri', mouth:'Bay of Bengal', states:'Uttarakhand, Uttar Pradesh, Bihar, West Bengal', tributaries:'Yamuna, Son, Kosi', waypoints:[[79,31], [80,29.5], [82,27], [84,25.5], [86,25], [88,24], [89,22.5]]},
+  // BIODIVERSITY HERITAGE SITES
+  {id:501, category:'Biosphere Reserve', name:'Nallur Tamarind Grove', lat:13.11, lng:77.58, states:'Karnataka', type:'State Govt', rivers:'Ancient Tamarind trees, Dragonflies', desc:'Oldest protected BR in India. Known for 200-year-old tamarind trees near Bengaluru.'},
+  {id:502, category:'Biosphere Reserve', name:'Pitchandikulam Forest', lat:11.93, lng:79.81, states:'Tamil Nadu', type:'State Govt', rivers:'Medicinal plants, Irula tribe plants', desc:'Community-restored sacred forest near Auroville; rich in medicinal biodiversity.'},
+  {id:503, category:'Biosphere Reserve', name:'Kokrebellur', lat:12.52, lng:77.18, states:'Karnataka', type:'State Govt', rivers:'Painted Stork, Spot-billed Pelican', desc:'Famous for nesting colonies of Painted Stork and Pelican; community-protected village.'},
+  {id:504, category:'Biosphere Reserve', name:'Mandvi Mangroves', lat:22.83, lng:69.35, states:'Gujarat', type:'State Govt', rivers:'Mangroves, Flamingo, Marine fauna', desc:'Mangrove ecosystem on Gulf of Kutch, important for flamingos and marine biodiversity.'},
+  {id:505, category:'Biosphere Reserve', name:'Khonoma Village Forest', lat:25.63, lng:94.05, states:'Nagaland', type:'Community', rivers:'Blyth\'s Tragopan, Amur Falcon, Oak forests', desc:'Asia\'s first green village; community-declared BR. Hosts the endangered Blyth\'s Tragopan.'},
+  {id:506, category:'Biosphere Reserve', name:'Siju Cave & Dobhakol Lake', lat:25.32, lng:90.71, states:'Meghalaya', type:'State Govt', rivers:'Horseshoe Bats, Freshwater fish, Cave ecosystems', desc:'Longest cave in India (Meghalaya); exceptional cave biodiversity and freshwater lake.'},
+  // MOUNTAIN PASSES
+  {id:601, category:'Mountain Pass', name:'Khardung La', lat:34.27, lng:77.60, states:'Ladakh', elev:'5359', type:'Leh to Siachen / Nubra Valley', range:'Karakoram', desc:'One of the highest motorable passes in the world. Gateway to Nubra Valley and Siachen Glacier.'},
+  {id:602, category:'Mountain Pass', name:'Chang La', lat:33.97, lng:77.87, states:'Ladakh', elev:'5360', type:'Leh to Pangong Lake', range:'Ladakh Range', desc:'High-altitude pass on the road from Leh to Pangong Tso Lake.'},
+  {id:603, category:'Mountain Pass', name:'Rohtang Pass', lat:32.37, lng:77.24, states:'Himachal Pradesh', elev:'3978', type:'Manali to Lahaul-Spiti', range:'Pir Panjal', desc:'Key pass on NH3; connects Kullu Valley to Lahaul-Spiti. Atal Tunnel bypasses it.'},
+  {id:604, category:'Mountain Pass', name:'Baralacha La', lat:32.73, lng:77.42, states:'Himachal Pradesh', elev:'4890', type:'Manali to Leh (Lahaul to Ladakh)', range:'Zanskar', desc:'High pass on Manali-Leh Highway; one of India\'s most scenic and challenging passes.'},
+  {id:605, category:'Mountain Pass', name:'Nathu La', lat:27.39, lng:88.83, states:'Sikkim', elev:'4310', type:'India-China (Tibet) trade route', range:'Himalaya', desc:'Historic Silk Road pass; opened for trade with China in 2006. India-China border point.'},
+  {id:606, category:'Mountain Pass', name:'Shipki La', lat:31.77, lng:78.77, states:'Himachal Pradesh', elev:'3933', type:'India-Tibet border pass (Sutlej Valley)', range:'Greater Himalaya', desc:'Border pass through which the Sutlej river enters India from Tibet.'},
+  {id:607, category:'Mountain Pass', name:'Lipulekh Pass', lat:30.18, lng:80.24, states:'Uttarakhand', elev:'5334', type:'India-China-Nepal trijunction', range:'Greater Himalaya', desc:'Tri-junction pass (India, Nepal, China). Strategic route; Kailash-Mansarovar Yatra route.'},
+  {id:608, category:'Mountain Pass', name:'Zoji La', lat:34.20, lng:75.47, states:'Jammu and Kashmir', elev:'3528', type:'Srinagar to Leh (Kashmir to Ladakh)', range:'Greater Himalaya', desc:'Critical pass on NH1; only road link to Ladakh in winter before Z-Morh Tunnel.'},
+  {id:609, category:'Mountain Pass', name:'Bomdi La', lat:27.26, lng:92.40, states:'Arunachal Pradesh', elev:'2743', type:'Tawang to Assam', range:'Eastern Himalaya', desc:'Strategic pass in Arunachal Pradesh near China border; key during 1962 war.'},
+  {id:610, category:'Mountain Pass', name:'Banihal Pass', lat:33.48, lng:75.20, states:'Jammu and Kashmir', elev:'2832', type:'Jammu to Srinagar', range:'Pir Panjal', desc:'Pass on Jammu-Srinagar highway. Banihal tunnel (Jawahar Tunnel) provides all-weather access.'},
 ];
 
 let places = JSON.parse(localStorage.getItem('upsc_atlas_final')) || SEED_DATA;
@@ -335,7 +355,7 @@ function switchTab(tab) {
 }
 
 // ─── EXPLORE FILTER LOGIC ─────────────────────────────────────────────────────
-const ALL_CATEGORIES = ['Mountain', 'Peak', 'River', 'Soil', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City'];
+const ALL_CATEGORIES = ['Mountain', 'Peak', 'River', 'Soil', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City', 'Biosphere Reserve', 'Mountain Pass'];
 let activeCategories = new Set(); let activeStates = new Set();     
 let appliedCategories = new Set(); let appliedStates = new Set();     
 
@@ -366,7 +386,7 @@ function applyFilters() { appliedCategories = new Set(activeCategories); applied
 function clearFilters() { activeCategories.clear(); activeStates.clear(); appliedCategories.clear(); appliedStates.clear(); initFilters(); checkFilterState(); renderMap(); }
 
 // ─── QUIZ FILTER LOGIC ───────────────────────────────────────────────────────
-const QUIZ_CATEGORIES = ['Mountain', 'Peak', 'River', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City'];
+const QUIZ_CATEGORIES = ['Mountain', 'Peak', 'River', 'Lake', 'Wetland', 'National Park', 'Wildlife Sanctuary', 'Tiger Reserve', 'Dam', 'City', 'Biosphere Reserve', 'Mountain Pass'];
 let quizQuestionCount = 5;
 function setQuizCount(n, btn) {
   quizQuestionCount = n;
@@ -589,6 +609,30 @@ function renderMap(){
     addFeatureClick(circ, c); g.appendChild(circ); 
   });
 
+  drawObj('Biosphere Reserve', (g, b) => {
+    const [x,y]=proj(b.lng,b.lat);
+    // Star shape: 6-pointed using two triangles
+    const r1=7, r2=3.5;
+    let pts='';
+    for(let i=0;i<12;i++){const r=i%2===0?r1:r2; const a=(i*30-90)*(Math.PI/180); pts+=`${(x+r*Math.cos(a)).toFixed(2)},${(y+r*Math.sin(a)).toFixed(2)} `;}
+    const star=el('polygon',{id:'feature-'+b.id,points:pts.trim(),fill:'#00695c',stroke:'#fff','stroke-width':'1',cursor:'pointer'});
+    if(!hideLabels){star.appendChild(el('title',{},[document.createTextNode(b.name+' (BR)')]));} 
+    addFeatureClick(star,b); g.appendChild(star);
+  });
+
+  drawObj('Mountain Pass', (g, p) => {
+    const [x,y]=proj(p.lng,p.lat);
+    // X / cross shape
+    const s=6;
+    const path=el('path',{id:'feature-'+p.id,d:`M${x-s},${y-s} L${x+s},${y+s} M${x+s},${y-s} L${x-s},${y+s}`,fill:'none',stroke:'#6a1b9a','stroke-width':'2.5','stroke-linecap':'round',cursor:'pointer','pointer-events':'stroke'});
+    if(!hideLabels){
+      const txt=el('text',{x,y:y+14,'font-size':'8','font-weight':'700',fill:'#6a1b9a','text-anchor':'middle','pointer-events':'none'}); txt.textContent=p.name;
+      path.appendChild(el('title',{},[document.createTextNode(p.name+' (Pass)')]));
+      g.appendChild(txt);
+    }
+    addFeatureClick(path,p); g.appendChild(path);
+  });
+
   // TIGER RESERVE OVERLAY LAYER
   if(appliedCategories.size === 0 || appliedCategories.has('Tiger Reserve')) {
       const gTR = el('g');
@@ -657,6 +701,8 @@ function updateDynamicFields() {
     case 'National Park': case 'Wildlife Sanctuary': html = `<div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Rivers / Mountains inside</label><input type="text" id="dyn-rivers"></div><div class="form-group"><label>Tiger Reserve Status</label><input type="text" id="dyn-tr" placeholder="Leave blank if none"></div><div class="form-group"><label>Famous Species</label><input type="text" id="dyn-type" placeholder="e.g. One-horned Rhino"></div>`; break;
     case 'Dam': html = `<div class="form-group"><label>River</label><input type="text" id="dyn-rivers"></div><div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div>`; break;
     case 'City': html = `<div class="form-group"><label>Type</label><select id="dyn-type"><option value="Important city">Important</option><option value="Capital city">Capital</option><option value="Port city">Port</option></select></div>`; break;
+    case 'Biosphere Reserve': html = `<div class="form-group"><label>State(s)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Designated By</label><input type="text" id="dyn-type" placeholder="e.g. State Govt, NBA"></div><div class="form-group"><label>Key Flora/Fauna</label><input type="text" id="dyn-rivers" placeholder="e.g. Orchids, Hornbill"></div>`; break;
+    case 'Mountain Pass': html = `<div class="form-group"><label>Elevation (m)</label><input type="text" id="dyn-elev"></div><div class="form-group"><label>State(s)/UT(s)</label><input type="text" id="dyn-states"></div><div class="form-group"><label>Connecting Regions</label><input type="text" id="dyn-type" placeholder="e.g. Leh to Manali"></div><div class="form-group"><label>Mountain Range</label><input type="text" id="dyn-range"></div>`; break;
   }
   cont.innerHTML = html;
 }
@@ -715,6 +761,8 @@ function buildLegend(){
     else if(shape==='square') s.style.cssText=`width:10px;height:8px;background:${color};display:inline-block;`;
     else if(shape==='tri') s.style.cssText=`width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid ${color};display:inline-block;`;
     else if(shape==='ring') s.style.cssText=`width:10px;height:10px;border-radius:50%;border:2px solid ${color};display:inline-block;flex-shrink:0;box-sizing:border-box;`;
+    else if(shape==='star') { s.style.cssText=`display:inline-block;flex-shrink:0;`; s.innerHTML=`<svg width="13" height="13" viewBox="-7 -7 14 14"><polygon points="0,-6 1.5,-2 5.7,-2 2.4,0.9 3.5,5.1 0,2.7 -3.5,5.1 -2.4,0.9 -5.7,-2 -1.5,-2" fill="${color}"/></svg>`; }
+    else if(shape==='cross') { s.style.cssText=`display:inline-block;flex-shrink:0;`; s.innerHTML=`<svg width="13" height="13" viewBox="-7 -7 14 14"><line x1="-5" y1="-5" x2="5" y2="5" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="-5" x2="-5" y2="5" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`; }
     else s.style.cssText=`width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;`;
     d.append(s,document.createTextNode(' '+label)); bar.appendChild(d);
   };
@@ -726,7 +774,7 @@ function buildLegend(){
   
   add('#8b7355','Mountain range', 'tri'); add('#4a2c18','Peak', 'tri'); add('#1565c0','River', 'line');
   add('#4a90d9','Lake'); add('#4caf7d','Wetland'); add('#2e7d32','National park', 'square');
-  add('#7cb342','Wildlife sanctuary', 'tri'); add('#e65100','Tiger Reserve', 'ring'); add('#546e7a','Dam', 'square'); add('#880e4f','City');
+  add('#7cb342','Wildlife sanctuary', 'tri'); add('#e65100','Tiger Reserve', 'ring'); add('#546e7a','Dam', 'square'); add('#880e4f','City'); add('#00695c','Biosphere Reserve', 'star'); add('#6a1b9a','Mountain Pass', 'cross');
 }
 
 
@@ -846,6 +894,16 @@ function loadQuestion() {
             qText.innerText = `Is the ${p.category} '${p.name}' freshwater or saltwater?`;
             currentCorrectAnswer = p.type || "Freshwater"; options = ["Freshwater", "Saltwater / Brackish"];
         }
+        else if (p.category === 'Biosphere Reserve') {
+            const rand = Math.random();
+            if (rand < 0.5 && (p.rivers)) { qText.innerText = `Which key species/flora is found at the Biosphere Reserve '${p.name}'?`; currentCorrectAnswer = p.rivers; qType='rivers'; }
+            else { qText.innerText = `In which state(s) is the Biosphere Reserve '${p.name}' located?`; currentCorrectAnswer = p.states || p.state; qType='states_multi'; }
+        }
+        else if (p.category === 'Mountain Pass') {
+            const rand = Math.random();
+            if (rand < 0.5 && p.elev) { qText.innerText = `What is the approximate elevation of the mountain pass '${p.name}'?`; currentCorrectAnswer = p.elev + 'm'; options = [p.elev+'m', (parseInt(p.elev)+500)+'m', (parseInt(p.elev)-400)+'m', (parseInt(p.elev)+1100)+'m'].sort(()=>0.5-Math.random()); }
+            else { qText.innerText = `In which state(s)/UT is the mountain pass '${p.name}' located?`; currentCorrectAnswer = p.states || p.state; qType='states_multi'; }
+        }
 
         if(!currentCorrectAnswer) {
             qText.innerText = `Which category does '${p.name}' belong to?`;
@@ -868,6 +926,8 @@ function loadQuestion() {
         let hint = "";
         if (p.category === 'River') { qText.innerText = `Name ALL the states that the river '${p.name}' flows through (comma separated):`; currentCorrectAnswer = p.states || p.state || 'Unknown'; hint = "e.g., Uttarakhand, UP, Bihar"; }
         else if (p.category === 'Dam') { qText.innerText = `Name the river on which the '${p.name}' dam is built:`; currentCorrectAnswer = p.rivers || p.river || 'Unknown'; hint = "River name"; }
+        else if (p.category === 'Biosphere Reserve') { qText.innerText = `Name the state(s) where the Biosphere Reserve '${p.name}' is located:`; currentCorrectAnswer = p.states || p.state || 'Unknown'; hint = "e.g., Karnataka"; }
+        else if (p.category === 'Mountain Pass') { qText.innerText = `Name the state(s)/UT where the mountain pass '${p.name}' is located:`; currentCorrectAnswer = p.states || p.state || 'Unknown'; hint = "e.g., Ladakh, Himachal Pradesh"; }
         else { qText.innerText = `Name ALL the state(s)/UT(s) where '${p.name}' (${p.category}) is located:`; currentCorrectAnswer = p.states || p.state || "Unknown"; hint = "e.g., Kerala, Tamil Nadu"; }
 
         optContainer.innerHTML = `<input type="text" id="quiz-text-input" class="quiz-text-input" placeholder="${hint}"><button class="quiz-submit-btn" onclick="submitFill()">Submit</button>`;
